@@ -9,7 +9,6 @@ import { BillPage } from './pages/BillPage'
 import { handleFirstCapitalLetter } from './methods/handleFirstCapitalLetter'
 import { AddBillForm } from './components/AddBillForm'
 import { AddBillPage } from './pages/AddBillPage'
-import { useQuery, useRealm } from './realm/models/Bill'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LoginPage } from './pages/LoginPage'
 const Stack = createNativeStackNavigator()

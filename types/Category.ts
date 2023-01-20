@@ -1,8 +1,8 @@
-import { TBill } from "./Bill";
+import { TBill } from './Bill'
 
 export type TCategory = {
-    name: string,
-    type: string,
-    value: number,
-    bills?: TBill[],
+  id?: string
+  name: string
+  value: number
+  bills?: TBill[]
 }

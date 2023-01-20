@@ -1,9 +1,9 @@
-import { TProduct } from "./Product"
+import { TProduct } from './Product'
 
 export type TBill = {
-    id: number,
-    name: string,
-    type: string,
-    value: Function,
-    products: any[]
+  id: string
+  name: string
+  type: string
+  value: Function
+  products: any[]
 }

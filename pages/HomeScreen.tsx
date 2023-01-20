@@ -7,6 +7,7 @@ import {
   Button,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native'
 import { Bill } from '../components/Bill'
 import { Tile } from '../components/Tile'
@@ -14,11 +15,18 @@ import { TBill } from '../types/Bill'
 import { TCategory } from '../types/Category'
 import { globalStyles } from '../styles/global'
 import { AddBillForm } from '../components/AddBillForm'
-import { useQuery, useRealm } from '../realm/models/Bill'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase/auth/firebase'
 
 // wyświetla wszystkie miesiące z danego roku
 
 export const HomeScreen = ({ route, navigation }: any) => {
+  const handleLogOut = () => {
+    signOut(auth)
+      .then(() => navigation.replace('LoginPage'))
+      .catch(() => alert('Wystąpił błąd.'))
+  }
+
   return (
     <ScrollView style={globalStyles.page}>
       <TouchableOpacity
@@ -28,7 +36,11 @@ export const HomeScreen = ({ route, navigation }: any) => {
         <Text style={styles.btnText}>Dodaj nowy rachunek</Text>
       </TouchableOpacity>
       <View style={globalStyles.listColumn}></View>
-      <View>{}</View>
+      <TouchableOpacity onPress={handleLogOut}>
+        <View>
+          <Text>Logout</Text>
+        </View>
+      </TouchableOpacity>
     </ScrollView>
   )
 }

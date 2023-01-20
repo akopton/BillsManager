@@ -11,32 +11,47 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native'
-import { app } from '../firebase'
+import { auth } from '../firebase/auth/firebase'
 import { globalStyles } from '../styles/global'
 
 export const LoginPage = ({ route, navigation }: any) => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<{
+    isEmailValid: boolean
+    isPasswordValid: boolean
+  }>({
+    isEmailValid: false,
+    isPasswordValid: false,
+  })
 
-  const auth = getAuth(app)
   const handleSignUp = () => {
+    setIsLoading(true)
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredentials: any) => {
         const user = userCredentials.user
         console.log(user.email)
+        setIsLoading(false)
       })
       .catch((err) => alert(err))
   }
 
   const handleLogIn = () => {
+    setIsLoading(true)
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredentials: any) => {
         const user = userCredentials.user
         console.log(`Logged in with ${user.email}`)
         navigation.replace('HomeScreen')
+        setIsLoading(false)
       })
-      .catch(() => alert('Wprowadzono zły email lub hasło'))
+      .catch(() => {
+        alert('Wprowadzono zły email lub hasło')
+        setIsLoading(false)
+      })
   }
 
   const handleEmail = (input: string) => {
@@ -72,7 +87,11 @@ export const LoginPage = ({ route, navigation }: any) => {
           style={styles.button}
           onPress={handleLogIn}
         >
-          <Text style={styles.buttonText}>Login</Text>
+          {isLoading ? (
+            <ActivityIndicator size="large" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}

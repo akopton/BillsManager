@@ -11,26 +11,64 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
 import { Picker, onOpen } from 'react-native-actions-sheet-picker'
 import { removePolishLetters } from '../methods/removePolishLetters'
+// import { db } from '../firebase'
+import {
+  query,
+  collection,
+  getDocs,
+  where,
+  getFirestore,
+  getDoc,
+  onSnapshot,
+} from 'firebase/firestore'
+import { auth } from '../firebase/auth/firebase'
+import { getCategories } from '../firebase/firestore/getCategories'
+import { TBill } from '../types/Bill'
+import { TCategory } from '../types/Category'
 // node_modules\react-native-actions-sheet-picker\src\components\Picker.tsx
 
 export const AddBillForm = () => {
   const [query, setQuery] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<any>()
   const [selectedProduct, setSelectedProduct] = useState<any>()
-
-  const [categories, setNewCategories] = useState<any>([])
-
+  const [categories, setCategories] = useState<any>()
   const [products, setProducts] = useState<any>([])
+
+  useEffect(() => {
+    getCategories().then((snapshot) => {
+      const newCategories: TCategory[] = []
+      snapshot.docs.forEach((doc) =>
+        newCategories.push({ ...(doc.data() as TCategory), id: doc.id })
+      )
+      setCategories(newCategories)
+    })
+  }, [])
+
+  useEffect(() => {
+    const db = getFirestore()
+    const collectionRef = collection(db, 'categories')
+    const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+      const snapshotCategories: TCategory[] = []
+      snapshot.docs.forEach((doc) => {
+        snapshotCategories.push({ ...(doc.data() as TCategory), id: doc.id })
+      })
+      setCategories(snapshotCategories)
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   const onSearch = (text: string) => {
     setQuery(text)
   }
 
   const filteredCategories: any = useMemo(() => {
-    return categories.filter((el: { name: string }) =>
+    return categories?.filter((el: { name: string }) =>
       removePolishLetters(el.name).includes(removePolishLetters(query))
     )
-  }, [query])
+  }, [categories, query])
 
   const filteredProducts: any = useMemo(() => {
     return products.filter((el: { name: string }) =>
