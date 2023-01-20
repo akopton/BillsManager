@@ -1,5 +1,5 @@
 import { NavigationContainer, Route, TabRouter } from '@react-navigation/native';
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useRef, useState } from 'react';
 import { ScrollView, Text, StyleSheet, Button } from 'react-native';
 import { CategoryPage } from './pages/CategoryPage';
@@ -12,6 +12,7 @@ import { handleFirstCapitalLetter } from './methods/handleFirstCapitalLetter';
 import { AddBillForm } from './components/AddBillForm';
 import { AddBillPage } from './pages/AddBillPage';
 import { useQuery, useRealm } from './realm/models/Bill';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator()
 

@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Text, StyleSheet, Button, FlatList, TouchableOpacity } from 'react-native';
 import { Bill } from '../components/Bill';
 import { Tile } from '../components/Tile';
-import { billsList } from '../constants/bills';
 import { TBill } from '../types/Bill';
 import { TCategory } from '../types/Category';
-import { sample_data } from '../constants/data';
 import { globalStyles } from '../styles/global';
 import { AddBillForm } from '../components/AddBillForm';
 import { useQuery, useRealm } from '../realm/models/Bill';
@@ -15,10 +13,6 @@ import { useQuery, useRealm } from '../realm/models/Bill';
 
 
 export const HomeScreen = ({route, navigation}:any) => {
-    
-
-
-    const {year} = sample_data
 
     return (
         <ScrollView style={globalStyles.page}>
@@ -26,11 +20,6 @@ export const HomeScreen = ({route, navigation}:any) => {
                 <Text style={styles.btnText}>Dodaj nowy rachunek</Text>
             </TouchableOpacity>
             <View style={globalStyles.listColumn}>
-                {
-                    year.months.map((month, id) => (
-                        <Tile key={id} navigation={navigation} props={month}/>
-                    ))
-                }
             </View>
             <View>
                 {
