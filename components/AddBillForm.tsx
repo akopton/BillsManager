@@ -51,18 +51,16 @@ export const AddBillForm = () => {
   const handleSelectedProduct = (product: TProduct) => {
     setSelectedProduct(product)
     setProductsList([...productsList, product])
+
+    if (productsList.includes(product)) {
+      const newProductsList = productsList.filter((el) => el !== product)
+      setProductsList(newProductsList)
+    }
   }
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate
-    console.log(event.type)
-
-    if (event.type !== 'set') setShow(false)
     setDate(currentDate)
-  }
-
-  const showDatePicker = () => {
-    setShow(!show)
   }
 
   const onSearch = (text: string) => {
@@ -178,17 +176,16 @@ export const AddBillForm = () => {
       </View>
       <View>
         <Text>Data: {date.toLocaleString()}</Text>
-        <TouchableOpacity onPress={showDatePicker}>
+        {/* <TouchableOpacity onPress={showDatePicker}>
           <Text>Ustaw datę</Text>
-        </TouchableOpacity>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            onChange={onChange}
-            display="spinner"
-          />
-        )}
+        </TouchableOpacity> */}
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          onChange={onChange}
+          display="default"
+          // positiveButton={{ label: 'OK', textColor: 'green' }}
+        />
       </View>
     </SafeAreaView>
   )
