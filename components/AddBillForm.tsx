@@ -6,6 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  DatePickerIOSComponent,
+  Platform,
+  Button,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
@@ -27,14 +30,58 @@ import { TBill } from '../types/Bill'
 import { TCategory } from '../types/Category'
 import { sortByName } from '../methods/sortByName'
 import { enableLogging } from 'firebase/database'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { TProduct } from '../types/Product'
 // node_modules\react-native-actions-sheet-picker\src\components\Picker.tsx
 
 export const AddBillForm = () => {
   const [query, setQuery] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<any>()
-  const [selectedProduct, setSelectedProduct] = useState<any>()
+  const [selectedProduct, setSelectedProduct] = useState<TProduct>()
   const [categories, setCategories] = useState<TCategory[]>([])
-  const [products, setProducts] = useState<any>([])
+  const [date, setDate] = useState(new Date())
+  const [show, setShow] = useState(false)
+  const [products, setProducts] = useState<any>([
+    { name: 'mleko' },
+    { name: 'olej' },
+    { name: 'jogurt' },
+  ])
+  const [productsList, setProductsList] = useState<TProduct[]>([])
+
+  const handleSelectedProduct = (product: TProduct) => {
+    setSelectedProduct(product)
+    setProductsList([...productsList, product])
+  }
+
+  const onChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate
+    console.log(event.type)
+
+    if (event.type !== 'set') setShow(false)
+    setDate(currentDate)
+  }
+
+  const showDatePicker = () => {
+    setShow(!show)
+  }
+
+  const onSearch = (text: string) => {
+    setQuery(text)
+  }
+
+  const filteredCategories: any = useMemo(() => {
+    sortByName(categories)
+    return categories?.filter((el: TCategory) =>
+      removePolishLetters(el.name).includes(removePolishLetters(query))
+    )
+  }, [categories, query])
+
+  const filteredProducts: any = useMemo(() => {
+    sortByName(products)
+    return products.filter((el: { name: string }) =>
+      removePolishLetters(el.name).includes(removePolishLetters(query))
+    )
+  }, [query])
 
   useEffect(() => {
     getCategories().then((snapshot) => {
@@ -61,23 +108,6 @@ export const AddBillForm = () => {
       unsubscribe()
     }
   }, [])
-
-  const onSearch = (text: string) => {
-    setQuery(text)
-  }
-
-  const filteredCategories: any = useMemo(() => {
-    sortByName(categories)
-    return categories?.filter((el: TCategory) =>
-      removePolishLetters(el.name).includes(removePolishLetters(query))
-    )
-  }, [categories, query])
-
-  const filteredProducts: any = useMemo(() => {
-    return products.filter((el: { name: string }) =>
-      removePolishLetters(el.name).includes(removePolishLetters(query))
-    )
-  }, [query])
 
   return (
     <SafeAreaView style={globalStyles.page}>
@@ -119,9 +149,7 @@ export const AddBillForm = () => {
             onOpen('Product')
           }}
         >
-          <Text style={styles.selectedItem}>
-            {selectedProduct ? `${selectedProduct?.name}` : 'Wybierz produkt'}
-          </Text>
+          <Text style={styles.selectedItem}>{'Wybierz produkty'}</Text>
         </TouchableOpacity>
         <Picker
           id="Product"
@@ -129,7 +157,7 @@ export const AddBillForm = () => {
           inputValue={query}
           searchable={true}
           label="Wybierz produkt"
-          setSelected={setSelectedProduct}
+          setSelected={handleSelectedProduct}
           onSearch={onSearch}
           noDataFoundText={'Nie znaleziono'}
           placeholderText={'Szukaj'}
@@ -140,6 +168,27 @@ export const AddBillForm = () => {
             onClose: () => setQuery(''),
           }}
         />
+      </View>
+      <View>
+        {productsList.map((product: TProduct, index: number) => (
+          <View key={index}>
+            <Text>{product.name}</Text>
+          </View>
+        ))}
+      </View>
+      <View>
+        <Text>Data: {date.toLocaleString()}</Text>
+        <TouchableOpacity onPress={showDatePicker}>
+          <Text>Ustaw datę</Text>
+        </TouchableOpacity>
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            onChange={onChange}
+            display="spinner"
+          />
+        )}
       </View>
     </SafeAreaView>
   )
