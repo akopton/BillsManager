@@ -25,13 +25,15 @@ import { auth } from '../firebase/auth/firebase'
 import { getCategories } from '../firebase/firestore/getCategories'
 import { TBill } from '../types/Bill'
 import { TCategory } from '../types/Category'
+import { sortByName } from '../methods/sortByName'
+import { enableLogging } from 'firebase/database'
 // node_modules\react-native-actions-sheet-picker\src\components\Picker.tsx
 
 export const AddBillForm = () => {
   const [query, setQuery] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<any>()
   const [selectedProduct, setSelectedProduct] = useState<any>()
-  const [categories, setCategories] = useState<any>()
+  const [categories, setCategories] = useState<TCategory[]>([])
   const [products, setProducts] = useState<any>([])
 
   useEffect(() => {
@@ -65,7 +67,8 @@ export const AddBillForm = () => {
   }
 
   const filteredCategories: any = useMemo(() => {
-    return categories?.filter((el: { name: string }) =>
+    sortByName(categories)
+    return categories?.filter((el: TCategory) =>
       removePolishLetters(el.name).includes(removePolishLetters(query))
     )
   }, [categories, query])
@@ -102,6 +105,11 @@ export const AddBillForm = () => {
           noDataFoundText={'Nie znaleziono'}
           placeholderText={'Szukaj'}
           closeText={'Zamknij'}
+          actionsSheetProps={{
+            children: null,
+            keyboardDismissMode: 'interactive',
+            onClose: () => setQuery(''),
+          }}
         />
       </View>
       <View>
@@ -126,6 +134,11 @@ export const AddBillForm = () => {
           noDataFoundText={'Nie znaleziono'}
           placeholderText={'Szukaj'}
           closeText={'Zamknij'}
+          actionsSheetProps={{
+            children: null,
+            keyboardDismissMode: 'interactive',
+            onClose: () => setQuery(''),
+          }}
         />
       </View>
     </SafeAreaView>
