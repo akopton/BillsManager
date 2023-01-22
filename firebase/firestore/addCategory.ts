@@ -1,13 +1,20 @@
-import {
-  addDoc,
-  collection,
-  doc,
-  getFirestore,
-  setDoc,
-} from 'firebase/firestore'
+import { addDoc, getDocs, query, where } from 'firebase/firestore'
 import { TCategory } from '../../types/Category'
+import { categoriesRef, db } from './database'
 
 export const addCategory = async (category: TCategory) => {
-  const db = getFirestore()
-  await addDoc(collection(db, 'categories'), category)
+  if (!category.name) {
+    alert('Wpisz nazwę kategorii aby ją dodać!')
+    return
+  }
+
+  const q = query(categoriesRef, where('name', '==', category.name))
+  const querySnapshot = await getDocs(q)
+
+  if (querySnapshot.docs.length) {
+    alert('Podana kategoria już istnieje!')
+    return
+  }
+
+  await addDoc(categoriesRef, category)
 }

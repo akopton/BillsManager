@@ -1,48 +1,22 @@
-import {
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Text,
-  TextInput,
   View,
   StyleSheet,
   TouchableOpacity,
-  Modal,
-  DatePickerIOSComponent,
-  Platform,
-  Button,
   ScrollView,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
 import { Picker, onOpen } from 'react-native-actions-sheet-picker'
-import { removePolishLetters } from '../methods/removePolishLetters'
-// import { db } from '../firebase'
-import {
-  query,
-  collection,
-  getDocs,
-  where,
-  getFirestore,
-  getDoc,
-  onSnapshot,
-} from 'firebase/firestore'
-import { auth } from '../firebase/auth/firebase'
-import { getCategories } from '../firebase/firestore/getCategories'
-import { TBill } from '../types/Bill'
+import { onSnapshot } from 'firebase/firestore'
 import { TCategory } from '../types/Category'
-import { sortByName } from '../methods/sortByName'
-import { enableLogging } from 'firebase/database'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
 import { sumValues } from '../methods/sumValues'
 import { Product } from './Product'
-// node_modules\react-native-actions-sheet-picker\src\components\Picker.tsx
+import { categoriesRef } from '../firebase/firestore/database'
+import { useQuery } from '../hooks/useQuery'
 
 export const AddBillForm = () => {
   const [query, setQuery] = useState<string>('')
@@ -81,49 +55,19 @@ export const AddBillForm = () => {
     setQuery(text)
   }
 
-  const filteredCategories: any = useMemo(() => {
-    sortByName(categories)
-    return categories?.filter((el: TCategory) =>
-      removePolishLetters(el.name).includes(removePolishLetters(query))
-    )
-  }, [categories, query])
-
-  const filteredProducts: any = useMemo(() => {
-    sortByName(products)
-    return products.filter((el: { name: string }) =>
-      removePolishLetters(el.name).includes(removePolishLetters(query))
-    )
-  }, [products, query])
-
   useEffect(() => {
-    getCategories().then((snapshot) => {
+    const unsubscribe = onSnapshot(categoriesRef, (snapshot) => {
       const newCategories: TCategory[] = []
-      snapshot.docs.forEach((doc) =>
-        newCategories.push({ ...(doc.data() as TCategory), id: doc.id })
-      )
-      setCategories(newCategories)
-    })
-  }, [])
-
-  useEffect(() => {
-    const db = getFirestore()
-    const collectionRef = collection(db, 'categories')
-    const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
-      const snapshotCategories: TCategory[] = []
       snapshot.docs.forEach((doc) => {
-        snapshotCategories.push({ ...(doc.data() as TCategory), id: doc.id })
+        newCategories.push({ ...(doc.data() as TCategory), id: doc.id })
       })
-      setCategories(snapshotCategories)
+      setCategories(newCategories)
     })
 
     return () => {
       unsubscribe()
     }
   }, [])
-
-  useEffect(() => {
-    console.log(productsList)
-  }, [productsList])
 
   return (
     <SafeAreaView style={globalStyles.page}>
@@ -145,7 +89,7 @@ export const AddBillForm = () => {
         </TouchableOpacity>
         <Picker
           id="Category"
-          data={filteredCategories}
+          data={useQuery(categories, query)}
           inputValue={query}
           searchable={true}
           label="Wybierz kategorię"
@@ -172,7 +116,7 @@ export const AddBillForm = () => {
         </TouchableOpacity>
         <Picker
           id="Product"
-          data={filteredProducts}
+          data={useQuery(products, query)}
           inputValue={query}
           searchable={true}
           label="Wybierz produkt"

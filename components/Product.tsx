@@ -53,7 +53,7 @@ export const Product = ({
           keyboardType="numeric"
           style={[styles.input, styles.productText, styles.valueInput]}
           onChangeText={handleProductValue}
-          value={product.value.toString()}
+          placeholder={product.value.toString()}
         />
       </View>
     </View>

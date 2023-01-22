@@ -1,14 +1,6 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  getFirestore,
-  onSnapshot,
-} from 'firebase/firestore'
+import { getDocs } from 'firebase/firestore'
+import { categoriesRef } from './database'
 
 export const getCategories = async () => {
-  const db = getFirestore()
-  const collectionRef = collection(db, 'categories')
-
-  return await getDocs(collectionRef)
+  return await getDocs(categoriesRef)
 }

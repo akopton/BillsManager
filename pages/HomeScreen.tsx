@@ -4,17 +4,9 @@ import {
   ScrollView,
   Text,
   StyleSheet,
-  Button,
-  FlatList,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native'
-import { Bill } from '../components/Bill'
-import { Tile } from '../components/Tile'
-import { TBill } from '../types/Bill'
-import { TCategory } from '../types/Category'
 import { globalStyles } from '../styles/global'
-import { AddBillForm } from '../components/AddBillForm'
 import { signOut } from 'firebase/auth'
 import { auth } from '../firebase/auth/firebase'
 
