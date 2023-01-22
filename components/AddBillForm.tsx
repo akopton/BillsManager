@@ -32,31 +32,35 @@ import { sortByName } from '../methods/sortByName'
 import { enableLogging } from 'firebase/database'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
+import { sumValues } from '../methods/sumValues'
 // node_modules\react-native-actions-sheet-picker\src\components\Picker.tsx
 
 export const AddBillForm = () => {
   const [query, setQuery] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<any>()
-  const [selectedProduct, setSelectedProduct] = useState<TProduct>()
   const [categories, setCategories] = useState<TCategory[]>([])
   const [date, setDate] = useState(new Date())
   const [show, setShow] = useState(false)
   const [products, setProducts] = useState<any>([
-    { name: 'mleko' },
-    { name: 'olej' },
-    { name: 'jogurt' },
+    { name: 'mleko', value: 1 },
+    { name: 'olej', value: 3 },
+    { name: 'jogurt', value: 0 },
   ])
   const [productsList, setProductsList] = useState<TProduct[]>([])
 
   const handleSelectedProduct = (product: TProduct) => {
-    setSelectedProduct(product)
     setProductsList([...productsList, product])
 
     if (productsList.includes(product)) {
       const newProductsList = productsList.filter((el) => el !== product)
       setProductsList(newProductsList)
+      return
     }
   }
+
+  const billSumValue = useMemo(() => {
+    return sumValues(productsList)
+  }, [productsList])
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate
@@ -79,7 +83,7 @@ export const AddBillForm = () => {
     return products.filter((el: { name: string }) =>
       removePolishLetters(el.name).includes(removePolishLetters(query))
     )
-  }, [query])
+  }, [products, query])
 
   useEffect(() => {
     getCategories().then((snapshot) => {
@@ -109,6 +113,9 @@ export const AddBillForm = () => {
 
   return (
     <SafeAreaView style={globalStyles.page}>
+      <View>
+        <Text>{billSumValue} zł</Text>
+      </View>
       <View>
         <TouchableOpacity
           style={styles.dropdown}
