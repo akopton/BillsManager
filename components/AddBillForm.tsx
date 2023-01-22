@@ -1,4 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import {
   Text,
   TextInput,
@@ -9,6 +16,7 @@ import {
   DatePickerIOSComponent,
   Platform,
   Button,
+  ScrollView,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
@@ -33,6 +41,7 @@ import { enableLogging } from 'firebase/database'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
 import { sumValues } from '../methods/sumValues'
+import { Product } from './Product'
 // node_modules\react-native-actions-sheet-picker\src\components\Picker.tsx
 
 export const AddBillForm = () => {
@@ -40,19 +49,20 @@ export const AddBillForm = () => {
   const [selectedCategory, setSelectedCategory] = useState<any>()
   const [categories, setCategories] = useState<TCategory[]>([])
   const [date, setDate] = useState(new Date())
-  const [show, setShow] = useState(false)
   const [products, setProducts] = useState<any>([
-    { name: 'mleko', value: 1 },
-    { name: 'olej', value: 3 },
-    { name: 'jogurt', value: 0 },
+    { name: 'mleko', count: 1, value: 0 },
+    { name: 'olej', count: 1, value: 0 },
+    { name: 'jogurt', count: 1, value: 0 },
   ])
   const [productsList, setProductsList] = useState<TProduct[]>([])
 
   const handleSelectedProduct = (product: TProduct) => {
     setProductsList([...productsList, product])
 
-    if (productsList.includes(product)) {
-      const newProductsList = productsList.filter((el) => el !== product)
+    if (productsList.some((el) => el.name === product.name)) {
+      const newProductsList = productsList.filter(
+        (el) => el.name !== product.name
+      )
       setProductsList(newProductsList)
       return
     }
@@ -62,7 +72,7 @@ export const AddBillForm = () => {
     return sumValues(productsList)
   }, [productsList])
 
-  const onChange = (event: any, selectedDate: any) => {
+  const onDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate
     setDate(currentDate)
   }
@@ -111,10 +121,14 @@ export const AddBillForm = () => {
     }
   }, [])
 
+  useEffect(() => {
+    console.log(productsList)
+  }, [productsList])
+
   return (
     <SafeAreaView style={globalStyles.page}>
       <View>
-        <Text>{billSumValue} zł</Text>
+        <Text>{billSumValue.replace('.', ',')} zł</Text>
       </View>
       <View>
         <TouchableOpacity
@@ -123,7 +137,7 @@ export const AddBillForm = () => {
             onOpen('Category')
           }}
         >
-          <Text style={styles.selectedItem}>
+          <Text style={styles.btnText}>
             {selectedCategory
               ? `${selectedCategory?.name}`
               : 'Wybierz kategorię'}
@@ -154,7 +168,7 @@ export const AddBillForm = () => {
             onOpen('Product')
           }}
         >
-          <Text style={styles.selectedItem}>{'Wybierz produkty'}</Text>
+          <Text style={styles.btnText}>{'Wybierz produkty'}</Text>
         </TouchableOpacity>
         <Picker
           id="Product"
@@ -174,25 +188,33 @@ export const AddBillForm = () => {
           }}
         />
       </View>
-      <View>
+      <ScrollView style={styles.productsList}>
         {productsList.map((product: TProduct, index: number) => (
-          <View key={index}>
-            <Text>{product.name}</Text>
-          </View>
+          <Product
+            product={product}
+            key={index}
+            productsList={productsList}
+            setProductsList={setProductsList}
+          />
         ))}
+      </ScrollView>
+      <View style={styles.datePicker}>
+        <View>
+          <Text>Data paragonu: </Text>
+        </View>
+        <View>
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            onChange={onDateChange}
+            display="default"
+          />
+        </View>
       </View>
-      <View>
-        <Text>Data: {date.toLocaleString()}</Text>
-        {/* <TouchableOpacity onPress={showDatePicker}>
-          <Text>Ustaw datę</Text>
-        </TouchableOpacity> */}
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          onChange={onChange}
-          display="default"
-          // positiveButton={{ label: 'OK', textColor: 'green' }}
-        />
+      <View style={styles.dropdown}>
+        <TouchableOpacity>
+          <Text style={styles.btnText}>dodaj paragon</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )
@@ -200,7 +222,7 @@ export const AddBillForm = () => {
 
 const styles = StyleSheet.create({
   dropdown: {
-    marginBottom: 20,
+    marginTop: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
     minWidth: 250,
@@ -209,12 +231,20 @@ const styles = StyleSheet.create({
     borderColor: '#aaa',
     alignSelf: 'center',
   },
-  selectedItem: {
+  btnText: {
     fontSize: 20,
     textAlign: 'center',
   },
   input: {
     borderWidth: 2,
     borderColor: '#000000',
+  },
+  datePicker: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  productsList: {
+    marginTop: 20,
   },
 })
