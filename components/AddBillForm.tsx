@@ -5,20 +5,22 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
 import { Picker, onOpen } from 'react-native-actions-sheet-picker'
-import { onSnapshot } from 'firebase/firestore'
+import { addDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { TCategory } from '../types/Category'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
 import { sumValues } from '../methods/sumValues'
 import { Product } from './Product'
-import { categoriesRef, productsRef } from '../firebase/firestore/database'
+import { billsRef, categoriesRef, productsRef } from '../firebase/index'
 import { useQuery } from '../hooks/useQuery'
 import { TBill } from '../types/Bill'
 import { stringToNumber } from '../methods/stringToNumber'
+// import { addBill } from '../firebase/firestore/addBill'
 
 const initialBill: TBill = {
   name: '',
@@ -28,14 +30,20 @@ const initialBill: TBill = {
   date: new Date(),
 }
 
-export const AddBillForm = () => {
-  const [query, setQuery] = useState<string>('')
+export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
+  const [searchValue, setSearchValue] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<TCategory>()
   const [categories, setCategories] = useState<TCategory[]>([])
   const [date, setDate] = useState(new Date())
   const [products, setProducts] = useState<TProduct[]>([])
   const [productsList, setProductsList] = useState<TProduct[]>([])
   const [bill, setBill] = useState<TBill>(initialBill)
+  const [billName, setBillName] = useState<string>()
+
+  const handleBillName = (name: string) => {
+    setBillName(name)
+    setBill({ ...bill, name: name })
+  }
 
   const handleSelectedCategory = (category: TCategory) => {
     setSelectedCategory(category)
@@ -65,17 +73,35 @@ export const AddBillForm = () => {
   const onDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate
     setDate(currentDate)
-    setBill({ ...bill, date: currentDate })
+    setBill({ ...bill, date: currentDate.getTime() })
   }
 
   const onSearch = (text: string) => {
-    setQuery(text)
+    setSearchValue(text)
   }
 
-  const handleAddBill = () => {
-    if (bill.products.some((el) => isNaN(el.count) || el.count < 1)) return
-    if (bill.products.some((el) => isNaN(el.value) || el.value < 1)) return
-    console.log(bill)
+  const handleAddBill = async () => {
+    setAddingNewBill(true)
+    const convertedProducts = productsList.map((product) => {
+      return {
+        ...product,
+        count:
+          typeof product.count === 'string'
+            ? stringToNumber(product.count)
+            : product.count,
+        value:
+          typeof product.value === 'string'
+            ? stringToNumber(product.value)
+            : product.value,
+      }
+    })
+
+    await addDoc(billsRef, { ...bill, products: convertedProducts }).then(
+      () => {
+        navigation.goBack()
+        setAddingNewBill(false)
+      }
+    )
   }
 
   useEffect(() => {
@@ -95,11 +121,13 @@ export const AddBillForm = () => {
   // get recently added products
   useEffect(() => {
     const unsubscribe = onSnapshot(productsRef, (snapshot) => {
-      const newProducts: TProduct[] = []
+      const newProducts: { id?: string; name: string }[] = []
       snapshot.docs.forEach((doc) => {
         newProducts.push({ ...(doc.data() as TProduct), id: doc.id })
       })
-      setProducts(newProducts)
+      setProducts(
+        newProducts.map((el) => ({ name: el.name, count: 0, value: 0 }))
+      )
     })
 
     return () => {
@@ -108,13 +136,35 @@ export const AddBillForm = () => {
   }, [])
 
   return (
-    <SafeAreaView style={globalStyles.page}>
+    <SafeAreaView
+      style={[globalStyles.page, { paddingTop: -20, paddingHorizontal: 70 }]}
+    >
       <View>
-        <Text>{billSumValue.replace('.', ',')} zł</Text>
+        <TextInput
+          style={[styles.dropdown, styles.btnText, { marginTop: 0 }]}
+          placeholder="nazwa"
+          value={billName}
+          onChangeText={handleBillName}
+        />
       </View>
+      <View
+        style={{
+          width: '100%',
+          alignSelf: 'center',
+          // paddingHorizontal: 35,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text style={{ fontSize: 20 }}>Suma:</Text>
+        <Text style={{ fontSize: 20 }}>
+          {billSumValue.replace('.', ',')} zł
+        </Text>
+      </View>
+
       <View>
         <TouchableOpacity
-          style={styles.dropdown}
+          style={[styles.dropdown]}
           onPress={() => {
             onOpen('Category')
           }}
@@ -127,8 +177,8 @@ export const AddBillForm = () => {
         </TouchableOpacity>
         <Picker
           id="Category"
-          data={useQuery(categories, query)}
-          inputValue={query}
+          data={useQuery(categories, searchValue)}
+          inputValue={searchValue}
           searchable={true}
           label="Wybierz kategorię"
           setSelected={handleSelectedCategory}
@@ -139,13 +189,13 @@ export const AddBillForm = () => {
           actionsSheetProps={{
             children: null,
             keyboardDismissMode: 'interactive',
-            onClose: () => setQuery(''),
+            onClose: () => setSearchValue(''),
           }}
         />
       </View>
       <View>
         <TouchableOpacity
-          style={styles.dropdown}
+          style={[styles.dropdown]}
           onPress={() => {
             onOpen('Product')
           }}
@@ -154,8 +204,8 @@ export const AddBillForm = () => {
         </TouchableOpacity>
         <Picker
           id="Product"
-          data={useQuery(products, query)}
-          inputValue={query}
+          data={useQuery(products, searchValue)}
+          inputValue={searchValue}
           searchable={true}
           label="Wybierz produkt"
           setSelected={handleSelectedProduct}
@@ -166,7 +216,7 @@ export const AddBillForm = () => {
           actionsSheetProps={{
             children: null,
             keyboardDismissMode: 'interactive',
-            onClose: () => setQuery(''),
+            onClose: () => setSearchValue(''),
           }}
         />
       </View>
@@ -209,8 +259,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    minWidth: 250,
-    maxWidth: 250,
+    width: '100%',
     borderWidth: 2,
     borderColor: '#aaa',
     alignSelf: 'center',

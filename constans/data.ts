@@ -1,6 +1,4 @@
 // import { handleValuesSum } from "../methods/handleValuesSum";
-import { handleValuesSum } from "../methods/handleValuesSum";
-import { billsList } from "./bills";
 
 // export const sample_data = {
 //     year: {
@@ -179,42 +177,36 @@ import { billsList } from "./bills";
 //     }
 // }
 
-
 export const sample_data = {
-    year: {
-        name: '2023',
-        type: 'Year',
-        months: []
-    }
+  year: {
+    name: '2023',
+    type: 'Year',
+    months: [],
+  },
 }
 
-
-
-
 type bill = {
-    name: 'castorama',
-    category: 'budowlane',
-    date: '12.01.2023',
-    products: product[]
+  name: 'castorama'
+  category: 'budowlane'
+  date: '12.01.2023'
+  products: product[]
 }
 
 type product = {
-    type: 'Product'
-    name: 'mleko',
-    count?: number,
-    value?: number,
+  type: 'Product'
+  name: 'mleko'
+  count?: number
+  value?: number
 }
-
 
 // kategoria => każdy rachunek gdzie bill.category === category.name
 type category = {
-    name: string,
-    bills: bill[]
+  name: string
+  bills: bill[]
 }
 
-// miesiąc => każdy rachunek gdzie bill.date 
+// miesiąc => każdy rachunek gdzie bill.date
 type month = {
-    name: string,
-    bills: bill[]
+  name: string
+  bills: bill[]
 }
-

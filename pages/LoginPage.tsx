@@ -13,7 +13,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native'
-import { auth } from '../firebase/auth/firebase'
+import { auth } from '../firebase'
 import { globalStyles } from '../styles/global'
 
 export const LoginPage = ({ route, navigation }: any) => {

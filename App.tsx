@@ -5,7 +5,6 @@ import { ScrollView, Text, StyleSheet, Button } from 'react-native'
 import { CategoryPage } from './pages/CategoryPage'
 import { HomeScreen } from './pages/HomeScreen'
 import { MonthPage } from './pages/MonthPage'
-import { BillPage } from './pages/BillPage'
 import { handleFirstCapitalLetter } from './methods/handleFirstCapitalLetter'
 import { AddBillForm } from './components/AddBillForm'
 import { AddBillPage } from './pages/AddBillPage'
@@ -47,14 +46,6 @@ export default function App() {
           <Stack.Screen
             name="CategoryPage"
             component={CategoryPage}
-            options={({ route, navigation }: any) => {
-              const { props } = route.params
-              return { title: handleFirstCapitalLetter(props.name) }
-            }}
-          />
-          <Stack.Screen
-            name="BillPage"
-            component={BillPage}
             options={({ route, navigation }: any) => {
               const { props } = route.params
               return { title: handleFirstCapitalLetter(props.name) }

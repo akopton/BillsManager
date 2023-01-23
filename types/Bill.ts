@@ -6,5 +6,5 @@ export type TBill = {
   category: string
   value: number
   products: TProduct[]
-  date: Date
+  date: Date | number
 }

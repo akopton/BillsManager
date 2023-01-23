@@ -19,18 +19,16 @@ export const Product = ({
   const handleProductCount = (count: string) => {
     const updatedProducts = productsList.map((el) => {
       if (product.name === el.name) {
-        return { ...product, count: count }
+        return {
+          ...el,
+          count: count,
+        }
       } else return el
     })
     setProductsList(updatedProducts)
     setBill({
       ...bill,
-      products: updatedProducts.map((product: TProduct) => {
-        return {
-          ...product,
-          count: typeof count === 'string' ? stringToNumber(count) : count,
-        }
-      }),
+      products: updatedProducts,
     })
   }
 
@@ -43,12 +41,7 @@ export const Product = ({
     setProductsList(updatedProducts)
     setBill({
       ...bill,
-      products: updatedProducts.map((product: TProduct) => {
-        return {
-          ...product,
-          value: typeof value === 'string' ? stringToNumber(value) : value,
-        }
-      }),
+      products: updatedProducts,
     })
   }
 
@@ -62,14 +55,14 @@ export const Product = ({
           keyboardType="numeric"
           style={[styles.input, styles.countInput, styles.productText]}
           onChangeText={handleProductCount}
-          value={product.count.toString()}
+          value={product.count ? product.count.toString() : ''}
           placeholder={'0'}
         />
         <TextInput
           keyboardType="numeric"
           style={[styles.input, styles.productText, styles.valueInput]}
           onChangeText={handleProductValue}
-          value={product.value.toString()}
+          value={product.value ? product.value.toString() : ''}
           placeholder={'0'}
         />
       </View>
@@ -96,7 +89,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     textAlign: 'center',
     padding: 5,
-    borderColor: 'black',
+    borderColor: '#aaa',
     marginLeft: 15,
   },
   countInput: {
