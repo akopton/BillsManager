@@ -20,7 +20,6 @@ import { billsRef, categoriesRef, productsRef } from '../firebase/index'
 import { useQuery } from '../hooks/useQuery'
 import { TBill } from '../types/Bill'
 import { stringToNumber } from '../methods/stringToNumber'
-// import { addBill } from '../firebase/firestore/addBill'
 
 const initialBill: TBill = {
   name: '',
@@ -39,6 +38,7 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   const [productsList, setProductsList] = useState<TProduct[]>([])
   const [bill, setBill] = useState<TBill>(initialBill)
   const [billName, setBillName] = useState<string>()
+  const [correct, setCorrect] = useState<boolean>(false)
 
   const handleBillName = (name: string) => {
     setBillName(name)
@@ -81,6 +81,16 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   }
 
   const handleAddBill = async () => {
+    if (!bill.products.length) {
+      alert('Musisz dodać produkty!')
+      return
+    }
+
+    if (bill.products.some((el) => !el.value)) {
+      alert('Proszę podać kwoty wybranych produktów!')
+      return
+    }
+
     setAddingNewBill(true)
     const convertedProducts = productsList.map((product) => {
       return {
@@ -126,7 +136,7 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
         newProducts.push({ ...(doc.data() as TProduct), id: doc.id })
       })
       setProducts(
-        newProducts.map((el) => ({ name: el.name, count: 0, value: 0 }))
+        newProducts.map((el) => ({ name: el.name, count: 1, value: 0 }))
       )
     })
 
@@ -134,6 +144,12 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
       unsubscribe()
     }
   }, [])
+
+  useEffect(() => {
+    if (bill.name && bill.category && bill.products.length) {
+      setCorrect(true)
+    }
+  }, [bill])
 
   return (
     <SafeAreaView
@@ -245,9 +261,11 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
           />
         </View>
       </View>
-      <View style={styles.dropdown}>
+      <View
+        style={[styles.dropdown, { borderColor: correct ? 'green' : '#aaa' }]}
+      >
         <TouchableOpacity onPress={handleAddBill}>
-          <Text style={styles.btnText}>dodaj paragon</Text>
+          <Text style={styles.btnText}>Dodaj paragon</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -260,8 +278,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     width: '100%',
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#aaa',
+    borderRadius: 15,
     alignSelf: 'center',
   },
   btnText: {
