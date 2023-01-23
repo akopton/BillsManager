@@ -6,19 +6,24 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  FlatList,
 } from 'react-native'
 import { globalStyles } from '../styles/global'
 import { signOut } from 'firebase/auth'
-import { auth, billsRef } from '../firebase'
+import { auth, billsRef, categoriesRef } from '../firebase'
 import { onSnapshot } from 'firebase/firestore'
 import { TBill } from '../types/Bill'
 import { numberToString } from '../methods/numberToString'
+import { Bill } from '../components/Bill'
+import { TCategory } from '../types/Category'
 
 // wyświetla wszystkie miesiące z danego roku
 
 export const HomeScreen = ({ route, navigation }: any) => {
   const [loadingBills, setLoadingBills] = useState<boolean>(false)
   const [billsList, setBillsList] = useState<TBill[]>([])
+  const [categories, setCategories] = useState<TCategory[]>([])
+  const [filterValue, setFilterValue] = useState<string>()
 
   const handleLogOut = () => {
     signOut(auth)
@@ -42,17 +47,68 @@ export const HomeScreen = ({ route, navigation }: any) => {
     }
   }, [])
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(categoriesRef, (snapshot) => {
+      const newCategories: TCategory[] = []
+      snapshot.docs.forEach((doc) => {
+        newCategories.push({ ...(doc.data() as TCategory), id: doc.id })
+      })
+      setCategories(newCategories)
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
+  const handleFilterValue = (category: string) => {
+    console.log(category)
+
+    setFilterValue(category)
+  }
+
   return (
     <View style={[globalStyles.page]}>
-      <TouchableOpacity
-        style={styles.addBillBtn}
-        onPress={() => navigation.navigate('AddBillPage')}
-      >
-        <Text style={styles.btnText}>Dodaj nowy rachunek</Text>
-      </TouchableOpacity>
+      <View>
+        <ScrollView
+          horizontal={true}
+          style={{
+            padding: 0,
+            borderWidth: 1,
+            borderColor: 'red',
+            flexDirection: 'row',
+          }}
+          showsHorizontalScrollIndicator={false}
+        >
+          {categories.map((el, id) => {
+            return (
+              <TouchableOpacity
+                key={id}
+                style={{ marginRight: 20 }}
+                onPress={() => handleFilterValue(el.name)}
+              >
+                <Text>{el.name}</Text>
+              </TouchableOpacity>
+            )
+          })}
+        </ScrollView>
+      </View>
+      <View style={styles.topNav}>
+        <TouchableOpacity
+          onPress={handleLogOut}
+          style={styles.btn}
+        >
+          <Text style={styles.btnText}>Wyloguj się</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => navigation.navigate('AddBillPage')}
+        >
+          <Text style={styles.btnText}>Dodaj nowy rachunek</Text>
+        </TouchableOpacity>
+      </View>
       <View
         style={{
-          height: '75%',
           width: '100%',
           borderColor: 'red',
           borderWidth: 2,
@@ -61,35 +117,35 @@ export const HomeScreen = ({ route, navigation }: any) => {
         {loadingBills ? (
           <ActivityIndicator size={'large'} />
         ) : (
-          <ScrollView style={{ width: '100%' }}>
-            {billsList?.map((bill, id) => {
-              return (
-                <TouchableOpacity
-                  key={id}
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text>{bill.name}</Text>
-                  <Text>{numberToString(bill.value)} zł</Text>
-                </TouchableOpacity>
-              )
-            })}
-          </ScrollView>
+          <FlatList
+            style={{ width: '100%' }}
+            data={billsList.filter((el) => el.category === filterValue)}
+            renderItem={({ item, index }: { item: TBill; index: number }) => (
+              <TouchableOpacity
+                key={index}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text>{item.name}</Text>
+                <Text>{numberToString(item.value)} zł</Text>
+              </TouchableOpacity>
+            )}
+          />
         )}
       </View>
-      <TouchableOpacity
-        onPress={handleLogOut}
-        style={{ position: 'absolute', bottom: 50, left: 50 }}
-      >
-        <Text>Wyloguj się</Text>
-      </TouchableOpacity>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  topNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
   title: {
     borderBottomColor: '#000000',
     marginTop: 16,
@@ -103,18 +159,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
   },
-  addBillBtn: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    borderWidth: 10,
-    borderColor: '#000000',
-    borderRadius: 20,
-    marginBottom: 20,
+  btn: {
+    borderWidth: 2,
+    borderColor: '#aaa',
+    borderRadius: 8,
+    padding: 5,
   },
   btnText: {
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'center',
   },
 })
