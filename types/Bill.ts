@@ -1,9 +1,10 @@
 import { TProduct } from './Product'
 
 export type TBill = {
-  id: string
+  id?: string
   name: string
-  type: string
-  value: Function
-  products: any[]
+  category: string
+  value: number
+  products: TProduct[]
+  date: Date
 }

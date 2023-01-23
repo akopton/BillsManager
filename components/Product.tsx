@@ -1,21 +1,20 @@
-import { Dispatch, DispatchWithoutAction } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInputComponent,
-  TextInput,
-} from 'react-native'
+import { View, Text, StyleSheet, TextInput } from 'react-native'
+import { stringToNumber } from '../methods/stringToNumber'
+import { TBill } from '../types/Bill'
 import { TProduct } from '../types/Product'
 
 export const Product = ({
   product,
   productsList,
   setProductsList,
+  bill,
+  setBill,
 }: {
   product: TProduct
   productsList: any[]
   setProductsList: any
+  bill: TBill
+  setBill: any
 }) => {
   const handleProductCount = (count: string) => {
     const updatedProducts = productsList.map((el) => {
@@ -24,6 +23,15 @@ export const Product = ({
       } else return el
     })
     setProductsList(updatedProducts)
+    setBill({
+      ...bill,
+      products: updatedProducts.map((product: TProduct) => {
+        return {
+          ...product,
+          count: typeof count === 'string' ? stringToNumber(count) : count,
+        }
+      }),
+    })
   }
 
   const handleProductValue = (value: string) => {
@@ -33,6 +41,15 @@ export const Product = ({
       } else return el
     })
     setProductsList(updatedProducts)
+    setBill({
+      ...bill,
+      products: updatedProducts.map((product: TProduct) => {
+        return {
+          ...product,
+          value: typeof value === 'string' ? stringToNumber(value) : value,
+        }
+      }),
+    })
   }
 
   return (
@@ -42,18 +59,18 @@ export const Product = ({
       </View>
       <View style={styles.inputsContainer}>
         <TextInput
-          nativeID="count"
           keyboardType="numeric"
           style={[styles.input, styles.countInput, styles.productText]}
           onChangeText={handleProductCount}
           value={product.count.toString()}
+          placeholder={'0'}
         />
         <TextInput
-          nativeID="value"
           keyboardType="numeric"
           style={[styles.input, styles.productText, styles.valueInput]}
           onChangeText={handleProductValue}
-          placeholder={product.value.toString()}
+          value={product.value.toString()}
+          placeholder={'0'}
         />
       </View>
     </View>
