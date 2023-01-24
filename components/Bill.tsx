@@ -1,39 +1,34 @@
 import { useEffect } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { handleFirstCapitalLetter } from '../methods/handleFirstCapitalLetter'
+import { numberToString } from '../methods/numberToString'
 import { TBill } from '../types/Bill'
 
-export const Bill = ({
-  props,
-  navigation,
-}: {
-  props: TBill
-  navigation: any
-}) => {
+export const Bill = (props: any) => {
   return (
     <TouchableOpacity
-      style={styles.container}
-      onPress={() => console.log(props.name)}
+      style={styles.billContainer}
+      onPress={() => console.log(props.item.name)}
+      onLongPress={() => console.log(props.item.value)}
     >
-      <View>
-        <Text style={styles.text}>{handleFirstCapitalLetter(props.name)}</Text>
-      </View>
-      <View>
-        <Text style={styles.text}>{props.value.toFixed(2)}zł</Text>
-      </View>
+      <Text>{props.item.name}</Text>
+      <Text>{numberToString(props.item.value)} zł</Text>
     </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    padding: 10,
+  billContainer: {
+    paddingHorizontal: 30,
+    paddingVertical: 20,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 2,
+    borderWidth: 2,
+    borderColor: '#aaa',
+    borderRadius: 10,
+    marginBottom: 10,
   },
-  text: {
-    fontSize: 30,
-  },
+  billName: {},
+  billValue: {},
 })

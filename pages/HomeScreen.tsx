@@ -14,7 +14,8 @@ import { onSnapshot } from 'firebase/firestore'
 import { TBill } from '../types/Bill'
 import { numberToString } from '../methods/numberToString'
 import { TCategory } from '../types/Category'
-import { CustomSearchBar } from '../components/SearchBar'
+import { CustomSearchBar } from '../components/CustomSearchBar'
+import { Bill } from '../components/Bill'
 
 // wyświetla wszystkie miesiące z danego roku
 
@@ -78,24 +79,17 @@ export const HomeScreen = ({ route, navigation }: any) => {
           handleFilterValue={handleFilterValue}
         />
       </View>
-      <View style={{ paddingHorizontal: 30 }}>
+      <View style={{ paddingHorizontal: 30, marginTop: 20, height: '90%' }}>
         {loadingBills ? (
           <ActivityIndicator size={'large'} />
         ) : (
           <FlatList
-            style={{ width: '100%', borderWidth: 2 }}
             data={filteredBills}
             renderItem={({ item, index }: { item: TBill; index: number }) => (
-              <TouchableOpacity
+              <Bill
+                item={item}
                 key={index}
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text>{item.name}</Text>
-                <Text>{numberToString(item.value)} zł</Text>
-              </TouchableOpacity>
+              />
             )}
           />
         )}

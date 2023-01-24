@@ -8,8 +8,6 @@ export const CustomSearchBar = (props: any) => {
       horizontal={true}
       style={{
         padding: 0,
-        borderWidth: 1,
-        borderColor: 'red',
         flexDirection: 'row',
       }}
       showsHorizontalScrollIndicator={false}
