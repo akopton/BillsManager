@@ -8,6 +8,8 @@ import { handleFirstCapitalLetter } from './methods/handleFirstCapitalLetter'
 import { AddBillPage } from './pages/AddBillPage'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LoginPage } from './pages/LoginPage'
+import { AddBillBtn } from './components/AddBillBtn'
+import { LogoutBtn } from './components/LogoutBtn'
 const Stack = createNativeStackNavigator()
 
 export default function App() {
@@ -30,7 +32,11 @@ export default function App() {
             name="HomeScreen"
             component={HomeScreen}
             options={({ route, navigation }: any) => {
-              return { title: 'Home' }
+              return {
+                title: 'Home',
+                headerLeft: () => <LogoutBtn navigation={navigation} />,
+                headerRight: () => <AddBillBtn navigation={navigation} />,
+              }
             }}
           />
           <Stack.Screen

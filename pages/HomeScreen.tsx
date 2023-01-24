@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   View,
   ScrollView,
@@ -9,13 +9,12 @@ import {
   FlatList,
 } from 'react-native'
 import { globalStyles } from '../styles/global'
-import { signOut } from 'firebase/auth'
 import { auth, billsRef, categoriesRef } from '../firebase'
 import { onSnapshot } from 'firebase/firestore'
 import { TBill } from '../types/Bill'
 import { numberToString } from '../methods/numberToString'
-import { Bill } from '../components/Bill'
 import { TCategory } from '../types/Category'
+import { CustomSearchBar } from '../components/SearchBar'
 
 // wyświetla wszystkie miesiące z danego roku
 
@@ -24,12 +23,6 @@ export const HomeScreen = ({ route, navigation }: any) => {
   const [billsList, setBillsList] = useState<TBill[]>([])
   const [categories, setCategories] = useState<TCategory[]>([])
   const [filterValue, setFilterValue] = useState<string>()
-
-  const handleLogOut = () => {
-    signOut(auth)
-      .then(() => navigation.replace('LoginPage'))
-      .catch(() => alert('Wystąpił błąd.'))
-  }
 
   useEffect(() => {
     setLoadingBills(true)
@@ -63,63 +56,35 @@ export const HomeScreen = ({ route, navigation }: any) => {
 
   const handleFilterValue = (category: string) => {
     console.log(category)
-
+    if (filterValue === category) {
+      setFilterValue(undefined)
+      return
+    }
     setFilterValue(category)
   }
 
+  const filteredBills = useMemo(() => {
+    return filterValue
+      ? billsList.filter((el) => el.category === filterValue)
+      : billsList
+  }, [billsList, filterValue])
+
   return (
-    <View style={[globalStyles.page]}>
+    <View style={[globalStyles.page, { paddingHorizontal: 20 }]}>
       <View>
-        <ScrollView
-          horizontal={true}
-          style={{
-            padding: 0,
-            borderWidth: 1,
-            borderColor: 'red',
-            flexDirection: 'row',
-          }}
-          showsHorizontalScrollIndicator={false}
-        >
-          {categories.map((el, id) => {
-            return (
-              <TouchableOpacity
-                key={id}
-                style={{ marginRight: 20 }}
-                onPress={() => handleFilterValue(el.name)}
-              >
-                <Text>{el.name}</Text>
-              </TouchableOpacity>
-            )
-          })}
-        </ScrollView>
+        <CustomSearchBar
+          arr={categories}
+          filterValue={filterValue}
+          handleFilterValue={handleFilterValue}
+        />
       </View>
-      <View style={styles.topNav}>
-        <TouchableOpacity
-          onPress={handleLogOut}
-          style={styles.btn}
-        >
-          <Text style={styles.btnText}>Wyloguj się</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => navigation.navigate('AddBillPage')}
-        >
-          <Text style={styles.btnText}>Dodaj nowy rachunek</Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          width: '100%',
-          borderColor: 'red',
-          borderWidth: 2,
-        }}
-      >
+      <View style={{ paddingHorizontal: 30 }}>
         {loadingBills ? (
           <ActivityIndicator size={'large'} />
         ) : (
           <FlatList
-            style={{ width: '100%' }}
-            data={billsList.filter((el) => el.category === filterValue)}
+            style={{ width: '100%', borderWidth: 2 }}
+            data={filteredBills}
             renderItem={({ item, index }: { item: TBill; index: number }) => (
               <TouchableOpacity
                 key={index}
@@ -140,12 +105,6 @@ export const HomeScreen = ({ route, navigation }: any) => {
 }
 
 const styles = StyleSheet.create({
-  topNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
   title: {
     borderBottomColor: '#000000',
     marginTop: 16,
@@ -158,15 +117,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 30,
     fontWeight: 'bold',
-  },
-  btn: {
-    borderWidth: 2,
-    borderColor: '#aaa',
-    borderRadius: 8,
-    padding: 5,
-  },
-  btnText: {
-    fontSize: 16,
-    textAlign: 'center',
   },
 })
