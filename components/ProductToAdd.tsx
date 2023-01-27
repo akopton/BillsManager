@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native'
-import { stringToNumber } from '../methods/stringToNumber'
 import { TBill } from '../types/Bill'
 import { TProduct } from '../types/Product'
 

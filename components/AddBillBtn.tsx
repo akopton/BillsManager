@@ -1,9 +1,13 @@
-import { TouchableOpacity, Text } from 'react-native'
+import { TouchableOpacity } from 'react-native'
+import Entypo from 'react-native-vector-icons/Entypo'
 
 export const AddBillBtn = (props: any) => {
   return (
     <TouchableOpacity onPress={() => props.navigation.navigate('AddBillPage')}>
-      <Text>Nowy rachunek</Text>
+      <Entypo
+        name="new-message"
+        size={20}
+      />
     </TouchableOpacity>
   )
 }

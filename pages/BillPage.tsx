@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import { View, Text } from 'react-native'
 
 export const BillPage = ({ route }: any) => {
   const bill = route.params

@@ -1,8 +1,5 @@
-import { useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import { handleFirstCapitalLetter } from '../methods/handleFirstCapitalLetter'
+import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { numberToString } from '../methods/numberToString'
-import { TBill } from '../types/Bill'
 
 export const Bill = (props: any) => {
   //TODO press bill to show its content, longpress bill to show modal with additional actions

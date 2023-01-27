@@ -1,18 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import {
-  View,
-  ScrollView,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  FlatList,
-} from 'react-native'
+import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native'
 import { globalStyles } from '../styles/global'
-import { auth, billsRef, categoriesRef } from '../firebase'
+import { billsRef, categoriesRef } from '../firebase'
 import { onSnapshot } from 'firebase/firestore'
 import { TBill } from '../types/Bill'
-import { numberToString } from '../methods/numberToString'
 import { TCategory } from '../types/Category'
 import { CustomSearchBar } from '../components/CustomSearchBar'
 import { Bill } from '../components/Bill'

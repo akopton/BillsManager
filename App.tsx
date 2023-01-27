@@ -1,6 +1,6 @@
 import { NavigationContainer, Route, TabRouter } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import { CategoryPage } from './pages/CategoryPage'
 import { HomeScreen } from './pages/HomeScreen'
 import { MonthPage } from './pages/MonthPage'

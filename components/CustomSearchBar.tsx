@@ -1,5 +1,4 @@
 import { ScrollView, TouchableOpacity, Text } from 'react-native'
-import { SearchBarProps } from 'react-native-screens'
 import { TCategory } from '../types/Category'
 
 export const CustomSearchBar = (props: any) => {
