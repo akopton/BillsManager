@@ -3,7 +3,7 @@ import { stringToNumber } from '../methods/stringToNumber'
 import { TBill } from '../types/Bill'
 import { TProduct } from '../types/Product'
 
-export const Product = ({
+export const ProductToAdd = ({
   product,
   productsList,
   setProductsList,

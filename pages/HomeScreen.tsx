@@ -56,7 +56,6 @@ export const HomeScreen = ({ route, navigation }: any) => {
   }, [])
 
   const handleFilterValue = (category: string) => {
-    console.log(category)
     if (filterValue === category) {
       setFilterValue(undefined)
       return
@@ -87,8 +86,9 @@ export const HomeScreen = ({ route, navigation }: any) => {
             data={filteredBills}
             renderItem={({ item, index }: { item: TBill; index: number }) => (
               <Bill
-                item={item}
+                bill={item}
                 key={index}
+                navigation={navigation}
               />
             )}
           />

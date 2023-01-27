@@ -5,14 +5,18 @@ import { numberToString } from '../methods/numberToString'
 import { TBill } from '../types/Bill'
 
 export const Bill = (props: any) => {
+  //TODO press bill to show its content, longpress bill to show modal with additional actions
+
   return (
     <TouchableOpacity
       style={styles.billContainer}
-      onPress={() => console.log(props.item.name)}
-      onLongPress={() => console.log(props.item.value)}
+      onPress={() => {
+        props.navigation.navigate('BillPage', props.bill)
+      }}
+      onLongPress={() => console.log(props.bill.value)}
     >
-      <Text>{props.item.name}</Text>
-      <Text>{numberToString(props.item.value)} zł</Text>
+      <Text>{props.bill.name}</Text>
+      <Text>{numberToString(props.bill.value)} zł</Text>
     </TouchableOpacity>
   )
 }

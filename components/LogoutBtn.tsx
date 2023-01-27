@@ -8,6 +8,7 @@ export const LogoutBtn = (props: any) => {
       .then(() => props.navigation.replace('LoginPage'))
       .catch(() => alert('Wystąpił błąd.'))
   }
+
   return (
     <TouchableOpacity onPress={handleLogOut}>
       <Text>Wyloguj się</Text>

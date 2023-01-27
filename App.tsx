@@ -10,6 +10,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LoginPage } from './pages/LoginPage'
 import { AddBillBtn } from './components/AddBillBtn'
 import { LogoutBtn } from './components/LogoutBtn'
+import { BillPage } from './pages/BillPage'
+import { DeleteBtn } from './components/DeleteBtn'
 const Stack = createNativeStackNavigator()
 
 export default function App() {
@@ -60,6 +62,22 @@ export default function App() {
             component={AddBillPage}
             options={({ route, navigation }: any) => {
               return { title: 'Dodaj nowy rachunek' }
+            }}
+          />
+          <Stack.Screen
+            name="BillPage"
+            component={BillPage}
+            options={({ route, navigation }: any) => {
+              const bill = route.params
+              return {
+                title: handleFirstCapitalLetter(bill.name),
+                headerRight: () => (
+                  <DeleteBtn
+                    {...bill}
+                    navigation={navigation}
+                  />
+                ),
+              }
             }}
           />
         </Stack.Navigator>

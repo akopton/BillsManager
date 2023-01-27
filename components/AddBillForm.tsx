@@ -15,7 +15,7 @@ import { TCategory } from '../types/Category'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
 import { sumValues } from '../methods/sumValues'
-import { Product } from './Product'
+import { ProductToAdd } from './ProductToAdd'
 import { billsRef, categoriesRef, productsRef } from '../firebase/index'
 import { useQuery } from '../hooks/useQuery'
 import { TBill } from '../types/Bill'
@@ -238,7 +238,7 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
       </View>
       <ScrollView style={styles.productsList}>
         {productsList.map((product: TProduct, index: number) => (
-          <Product
+          <ProductToAdd
             product={product}
             key={index}
             productsList={productsList}

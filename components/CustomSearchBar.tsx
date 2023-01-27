@@ -12,7 +12,6 @@ export const CustomSearchBar = (props: any) => {
       }}
       showsHorizontalScrollIndicator={false}
       snapToEnd={true}
-      pagingEnabled={true}
     >
       {props.arr.map((el: TCategory, id: number) => {
         return (
@@ -21,7 +20,7 @@ export const CustomSearchBar = (props: any) => {
             style={{
               paddingHorizontal: 10,
               paddingVertical: 5,
-              borderRadius: 5,
+              borderRadius: 20,
               borderColor: el.name === props.filterValue ? 'white' : '#aaa',
               backgroundColor: el.name === props.filterValue ? '#aaa' : 'white',
               marginRight: id + 1 === props.arr.length ? 0 : 10,
