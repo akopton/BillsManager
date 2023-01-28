@@ -131,13 +131,23 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   // get recently added products
   useEffect(() => {
     const unsubscribe = onSnapshot(productsRef, (snapshot) => {
-      const newProducts: { id?: string; name: string }[] = []
+      const newProducts: TProduct[] = []
       snapshot.docs.forEach((doc) => {
-        newProducts.push({ ...(doc.data() as TProduct), id: doc.id })
+        newProducts.push({
+          ...(doc.data() as { name: string }),
+          id: doc.id,
+          count: 1,
+          value: 0,
+        })
       })
-      setProducts(
-        newProducts.map((el) => ({ name: el.name, count: 1, value: 0 }))
+      setProducts(newProducts)
+      const [result] = productsList.filter(
+        (el: TProduct) => !newProducts.includes(el)
       )
+      const newProductsList = productsList.filter(
+        (product: TProduct) => product !== result
+      )
+      setProductsList(newProductsList)
     })
 
     return () => {
