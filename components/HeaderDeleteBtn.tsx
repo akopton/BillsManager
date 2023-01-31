@@ -3,7 +3,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase'
 
-export const DeleteBtn = (props: any) => {
+export const HeaderDeleteBtn = (props: any) => {
   const createTwoButtonAlert = () =>
     Alert.alert(
       `Deleting bill ${props.name}.`,
@@ -29,13 +29,11 @@ export const DeleteBtn = (props: any) => {
 
   return (
     <TouchableOpacity onPress={createTwoButtonAlert}>
-      <Text>
-        <FontAwesome5
-          name={'trash-alt'}
-          solid
-          size={20}
-        />
-      </Text>
+      <FontAwesome5
+        name={'trash-alt'}
+        solid
+        size={20}
+      />
     </TouchableOpacity>
   )
 }

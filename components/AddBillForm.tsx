@@ -33,7 +33,7 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   const [searchValue, setSearchValue] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<TCategory>()
   const [categories, setCategories] = useState<TCategory[]>([])
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useState<Date>(new Date())
   const [products, setProducts] = useState<TProduct[]>([])
   const [productsList, setProductsList] = useState<TProduct[]>([])
   const [bill, setBill] = useState<TBill>(initialBill)
@@ -116,11 +116,12 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(categoriesRef, (snapshot) => {
-      const newCategories: TCategory[] = []
+      const newCategories: any[] = []
       snapshot.docs.forEach((doc) => {
         newCategories.push({ ...(doc.data() as TCategory), id: doc.id })
       })
       setCategories(newCategories)
+      setSelectedCategory(undefined)
     })
 
     return () => {
@@ -196,7 +197,7 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
           }}
         >
           <Text style={styles.btnText}>
-            {selectedCategory
+            {selectedCategory && selectedCategory !== undefined
               ? `${selectedCategory?.name}`
               : 'Wybierz kategorię'}
           </Text>

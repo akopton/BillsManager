@@ -11,7 +11,7 @@ import { LoginPage } from './pages/LoginPage'
 import { AddBillBtn } from './components/AddBillBtn'
 import { LogoutBtn } from './components/LogoutBtn'
 import { BillPage } from './pages/BillPage'
-import { DeleteBtn } from './components/DeleteBtn'
+import { HeaderDeleteBtn } from './components/HeaderDeleteBtn'
 const Stack = createNativeStackNavigator()
 
 export default function App() {
@@ -72,7 +72,7 @@ export default function App() {
               return {
                 title: handleFirstCapitalLetter(bill.name),
                 headerRight: () => (
-                  <DeleteBtn
+                  <HeaderDeleteBtn
                     {...bill}
                     navigation={navigation}
                   />

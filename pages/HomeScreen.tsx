@@ -1,5 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  Text,
+  TouchableOpacity,
+} from 'react-native'
 import { globalStyles } from '../styles/global'
 import { billsRef, categoriesRef } from '../firebase'
 import { onSnapshot } from 'firebase/firestore'
@@ -7,6 +15,7 @@ import { TBill } from '../types/Bill'
 import { TCategory } from '../types/Category'
 import { CustomSearchBar } from '../components/CustomSearchBar'
 import { Bill } from '../components/Bill'
+import { CustomPopup } from '../components/CustomPopup'
 
 // wyświetla wszystkie miesiące z danego roku
 
@@ -15,6 +24,10 @@ export const HomeScreen = ({ route, navigation }: any) => {
   const [billsList, setBillsList] = useState<TBill[]>([])
   const [categories, setCategories] = useState<TCategory[]>([])
   const [filterValue, setFilterValue] = useState<string>()
+  const [popup, setPopup] = useState<{ show: boolean; content: unknown }>({
+    show: false,
+    content: {},
+  })
 
   useEffect(() => {
     setLoadingBills(true)
@@ -80,11 +93,19 @@ export const HomeScreen = ({ route, navigation }: any) => {
                 bill={item}
                 key={index}
                 navigation={navigation}
+                setPopup={setPopup}
               />
             )}
           />
         )}
       </View>
+      {popup.show && (
+        <CustomPopup
+          popup={popup}
+          setPopup={setPopup}
+          content={popup.content}
+        />
+      )}
     </View>
   )
 }

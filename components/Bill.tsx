@@ -10,7 +10,7 @@ export const Bill = (props: any) => {
       onPress={() => {
         props.navigation.navigate('BillPage', props.bill)
       }}
-      onLongPress={() => console.log(props.bill.value)}
+      onLongPress={() => props.setPopup({ show: true, content: props.bill })}
     >
       <Text>{props.bill.name}</Text>
       <Text>{numberToString(props.bill.value)} zł</Text>
