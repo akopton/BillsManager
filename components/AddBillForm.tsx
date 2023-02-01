@@ -10,7 +10,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
 import { Picker, onOpen } from 'react-native-actions-sheet-picker'
-import { addDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
+import {
+  addDoc,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore'
 import { TCategory } from '../types/Category'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
@@ -20,6 +28,8 @@ import { billsRef, categoriesRef, productsRef } from '../firebase/index'
 import { useQuery } from '../hooks/useQuery'
 import { TBill } from '../types/Bill'
 import { stringToNumber } from '../methods/stringToNumber'
+import { increment, remove } from 'firebase/database'
+import { addBill } from '../firebase/addBill'
 
 const initialBill: TBill = {
   name: '',
@@ -81,37 +91,11 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   }
 
   const handleAddBill = async () => {
-    if (!bill.products.length) {
-      alert('Musisz dodać produkty!')
-      return
-    }
-
-    if (bill.products.some((el) => !el.value)) {
-      alert('Proszę podać kwoty wybranych produktów!')
-      return
-    }
-
     setAddingNewBill(true)
-    const convertedProducts = productsList.map((product) => {
-      return {
-        ...product,
-        count:
-          typeof product.count === 'string'
-            ? stringToNumber(product.count)
-            : product.count,
-        value:
-          typeof product.value === 'string'
-            ? stringToNumber(product.value)
-            : product.value,
-      }
+    await addBill(bill, selectedCategory).then(() => {
+      navigation.goBack()
+      setAddingNewBill(false)
     })
-
-    await addDoc(billsRef, { ...bill, products: convertedProducts }).then(
-      () => {
-        navigation.goBack()
-        setAddingNewBill(false)
-      }
-    )
   }
 
   useEffect(() => {
@@ -129,7 +113,6 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
     }
   }, [])
 
-  // get recently added products
   useEffect(() => {
     const unsubscribe = onSnapshot(productsRef, (snapshot) => {
       const newProducts: TProduct[] = []

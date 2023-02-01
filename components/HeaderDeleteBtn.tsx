@@ -2,6 +2,8 @@ import { Text, TouchableOpacity, Alert } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase'
+import { deleteBill } from '../firebase/deleteBill'
+import { TBill } from '../types/Bill'
 
 export const HeaderDeleteBtn = (props: any) => {
   const createTwoButtonAlert = () =>
@@ -15,14 +17,14 @@ export const HeaderDeleteBtn = (props: any) => {
         },
         {
           text: 'Delete',
-          onPress: () => deleteItem(props.id),
+          onPress: () => handleDeleteBill(props),
           style: 'destructive',
         },
       ]
     )
 
-  const deleteItem = async (id: string) => {
-    await deleteDoc(doc(db, 'bills', id)).then(() => {
+  const handleDeleteBill = async (bill: TBill) => {
+    await deleteBill(bill).then(() => {
       props.navigation.replace('HomeScreen')
     })
   }

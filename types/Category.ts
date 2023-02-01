@@ -4,5 +4,5 @@ export type TCategory = {
   id?: string
   name: string
   value: number
-  bills?: TBill[]
+  bills: TBill[]
 }

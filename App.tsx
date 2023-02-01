@@ -8,7 +8,7 @@ import { handleFirstCapitalLetter } from './methods/handleFirstCapitalLetter'
 import { AddBillPage } from './pages/AddBillPage'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LoginPage } from './pages/LoginPage'
-import { AddBillBtn } from './components/AddBillBtn'
+import { HeaderAddBillBtn } from './components/HeaderAddBillBtn'
 import { LogoutBtn } from './components/LogoutBtn'
 import { BillPage } from './pages/BillPage'
 import { HeaderDeleteBtn } from './components/HeaderDeleteBtn'
@@ -37,7 +37,7 @@ export default function App() {
               return {
                 title: 'Home',
                 headerLeft: () => <LogoutBtn navigation={navigation} />,
-                headerRight: () => <AddBillBtn navigation={navigation} />,
+                headerRight: () => <HeaderAddBillBtn navigation={navigation} />,
               }
             }}
           />
