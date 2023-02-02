@@ -7,7 +7,8 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore'
-import { billsRef, categoriesRef, monthNames, monthsRef } from '.'
+import { billsRef, categoriesRef, monthsRef } from '.'
+import { useMonthAsString } from '../hooks/useMonthAsString'
 import { TBill } from '../types/Bill'
 
 export const deleteBill = async (bill: TBill) => {
@@ -26,9 +27,7 @@ export const deleteBill = async (bill: TBill) => {
     })
   })
 
-  const monthId = new Date(bill.date).getMonth()
-  const monthToUpdate = monthNames[monthId]
-
+  const monthToUpdate = useMonthAsString(bill.date)
   const monthsQuery = query(monthsRef, where('name', '==', monthToUpdate))
   const monthsQuerySnapshot = await getDocs(monthsQuery)
 

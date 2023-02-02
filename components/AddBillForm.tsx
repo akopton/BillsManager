@@ -91,6 +91,16 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   }
 
   const handleAddBill = async () => {
+    if (!bill.products.length) {
+      alert('Musisz dodać produkty!')
+      return
+    }
+
+    if (bill.products.some((el) => !el.value)) {
+      alert('Proszę podać kwoty wybranych produktów!')
+      return
+    }
+
     setAddingNewBill(true)
     await addBill(bill, selectedCategory).then(() => {
       navigation.goBack()
@@ -146,89 +156,89 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   }, [bill])
 
   return (
-    <SafeAreaView
-      style={[globalStyles.page, { paddingTop: -20, paddingHorizontal: 70 }]}
-    >
-      <View>
-        <TextInput
-          style={[styles.dropdown, styles.btnText, { marginTop: 0 }]}
-          placeholder="nazwa"
-          value={billName}
-          onChangeText={handleBillName}
-        />
-      </View>
-      <View
-        style={{
-          width: '100%',
-          alignSelf: 'center',
-          // paddingHorizontal: 35,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text style={{ fontSize: 20 }}>Suma:</Text>
-        <Text style={{ fontSize: 20 }}>
-          {billSumValue.replace('.', ',')} zł
-        </Text>
-      </View>
-
-      <View>
-        <TouchableOpacity
-          style={[styles.dropdown]}
-          onPress={() => {
-            onOpen('Category')
+    <SafeAreaView style={[globalStyles.page, { paddingTop: -20 }]}>
+      <View style={{ paddingHorizontal: 20 }}>
+        <View>
+          <TextInput
+            style={[styles.dropdown, styles.btnText, { marginTop: 0 }]}
+            placeholder="nazwa"
+            value={billName}
+            onChangeText={handleBillName}
+          />
+        </View>
+        <View
+          style={{
+            width: '100%',
+            alignSelf: 'center',
+            // paddingHorizontal: 35,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}
         >
-          <Text style={styles.btnText}>
-            {selectedCategory && selectedCategory !== undefined
-              ? `${selectedCategory?.name}`
-              : 'Wybierz kategorię'}
+          <Text style={{ fontSize: 20 }}>Suma:</Text>
+          <Text style={{ fontSize: 20 }}>
+            {billSumValue.replace('.', ',')} zł
           </Text>
-        </TouchableOpacity>
-        <Picker
-          id="Category"
-          data={useQuery(categories, searchValue)}
-          inputValue={searchValue}
-          searchable={true}
-          label="Wybierz kategorię"
-          setSelected={handleSelectedCategory}
-          onSearch={onSearch}
-          noDataFoundText={'Nie znaleziono'}
-          placeholderText={'Szukaj'}
-          closeText={'Zamknij'}
-          actionsSheetProps={{
-            children: null,
-            keyboardDismissMode: 'interactive',
-            onClose: () => setSearchValue(''),
-          }}
-        />
-      </View>
-      <View>
-        <TouchableOpacity
-          style={[styles.dropdown]}
-          onPress={() => {
-            onOpen('Product')
-          }}
-        >
-          <Text style={styles.btnText}>{'Wybierz produkty'}</Text>
-        </TouchableOpacity>
-        <Picker
-          id="Product"
-          data={useQuery(products, searchValue)}
-          inputValue={searchValue}
-          searchable={true}
-          label="Wybierz produkt"
-          setSelected={handleSelectedProduct}
-          onSearch={onSearch}
-          noDataFoundText={'Nie znaleziono'}
-          placeholderText={'Szukaj'}
-          closeText={'Zamknij'}
-          actionsSheetProps={{
-            children: null,
-            keyboardDismissMode: 'interactive',
-            onClose: () => setSearchValue(''),
-          }}
-        />
+        </View>
+
+        <View>
+          <TouchableOpacity
+            style={[styles.dropdown]}
+            onPress={() => {
+              onOpen('Category')
+            }}
+          >
+            <Text style={styles.btnText}>
+              {selectedCategory && selectedCategory !== undefined
+                ? `${selectedCategory?.name}`
+                : 'Wybierz kategorię'}
+            </Text>
+          </TouchableOpacity>
+          <Picker
+            id="Category"
+            data={useQuery(categories, searchValue)}
+            inputValue={searchValue}
+            searchable={true}
+            label="Wybierz kategorię"
+            setSelected={handleSelectedCategory}
+            onSearch={onSearch}
+            noDataFoundText={'Nie znaleziono'}
+            placeholderText={'Szukaj'}
+            closeText={'Zamknij'}
+            actionsSheetProps={{
+              children: null,
+              keyboardDismissMode: 'interactive',
+              onClose: () => setSearchValue(''),
+            }}
+          />
+        </View>
+        <View>
+          <TouchableOpacity
+            style={[styles.dropdown]}
+            onPress={() => {
+              onOpen('Product')
+            }}
+          >
+            <Text style={styles.btnText}>{'Wybierz produkty'}</Text>
+          </TouchableOpacity>
+          <Picker
+            id="Product"
+            data={useQuery(products, searchValue)}
+            inputValue={searchValue}
+            searchable={true}
+            label="Wybierz produkt"
+            setSelected={handleSelectedProduct}
+            onSearch={onSearch}
+            noDataFoundText={'Nie znaleziono'}
+            placeholderText={'Szukaj'}
+            closeText={'Zamknij'}
+            actionsSheetProps={{
+              children: null,
+              keyboardDismissMode: 'interactive',
+              onClose: () => setSearchValue(''),
+            }}
+          />
+        </View>
       </View>
       <ScrollView style={styles.productsList}>
         {productsList.map((product: TProduct, index: number) => (
@@ -251,7 +261,6 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
             testID="dateTimePicker"
             value={date}
             onChange={onDateChange}
-            display="default"
           />
         </View>
       </View>
@@ -292,6 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 5,
   },
   productsList: {
     marginTop: 20,
