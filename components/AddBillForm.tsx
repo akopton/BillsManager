@@ -36,7 +36,7 @@ const initialBill: TBill = {
   category: '',
   value: 0,
   products: [],
-  date: new Date(),
+  date: new Date().getTime(),
 }
 
 export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {

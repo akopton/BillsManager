@@ -30,5 +30,8 @@ export const db = getFirestore()
 export const categoriesRef = collection(db, 'categories')
 export const productsRef = collection(db, 'products')
 export const billsRef = collection(db, 'bills')
+export const monthsRef = collection(db, 'months')
 
-
+export const monthNames = ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec",
+  "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"
+];

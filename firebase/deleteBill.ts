@@ -4,23 +4,41 @@ import {
   doc,
   getDocs,
   query,
-  setDoc,
   updateDoc,
   where,
 } from 'firebase/firestore'
-import { billsRef, categoriesRef, db, productsRef } from '.'
+import { billsRef, categoriesRef, monthNames, monthsRef } from '.'
 import { TBill } from '../types/Bill'
 
 export const deleteBill = async (bill: TBill) => {
-  const q = query(categoriesRef, where('name', '==', bill.category))
-  const querySnapshot = await getDocs(q)
-  querySnapshot.forEach(async (res) => {
-    const newDoc = res.data()
-    const docRef = doc(categoriesRef, newDoc.id)
+  const categoriesQuery = query(
+    categoriesRef,
+    where('name', '==', bill.category)
+  )
+  const categoriesQuerySnapshot = await getDocs(categoriesQuery)
+  categoriesQuerySnapshot.forEach(async (res) => {
+    const docToUpdate = res.data()
+    const docRef = doc(categoriesRef, docToUpdate.id)
 
     await updateDoc(docRef, {
-      bills: newDoc.bills.filter((el: TBill) => el.id !== bill.id),
-      value: newDoc.value - bill.value,
+      bills: docToUpdate.bills.filter((el: TBill) => el.id !== bill.id),
+      value: docToUpdate.value - bill.value,
+    })
+  })
+
+  const monthId = new Date(bill.date).getMonth()
+  const monthToUpdate = monthNames[monthId]
+
+  const monthsQuery = query(monthsRef, where('name', '==', monthToUpdate))
+  const monthsQuerySnapshot = await getDocs(monthsQuery)
+
+  monthsQuerySnapshot.forEach(async (res) => {
+    const docToUpdate = res.data()
+    const docRef = doc(monthsRef, res.id)
+
+    await updateDoc(docRef, {
+      bills: docToUpdate.bills.filter((el: TBill) => el.id !== bill.id),
+      value: docToUpdate.value - bill.value,
     })
   })
 

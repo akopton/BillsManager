@@ -12,6 +12,8 @@ import {
 import Entypo from 'react-native-vector-icons/Entypo'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { db } from '../firebase'
+import { deleteBill } from '../firebase/deleteBill'
+import { TBill } from '../types/Bill'
 
 export const CustomPopup = (props: any) => {
   const createTwoButtonAlert = () =>
@@ -25,15 +27,15 @@ export const CustomPopup = (props: any) => {
         },
         {
           text: 'Delete',
-          onPress: () => deleteItem(props.content.id),
+          onPress: () => deleteItem(props.content),
           style: 'destructive',
         },
       ]
     )
 
-  const deleteItem = async (id: string) => {
+  const deleteItem = async (bill: TBill) => {
     hideModal()
-    await deleteDoc(doc(db, 'bills', id))
+    await deleteBill(bill)
   }
 
   const hideModal = () => {
