@@ -7,8 +7,9 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore'
-import { billsRef, categoriesRef, monthsRef } from '.'
+import { billsRef, categoriesRef, monthsRef, yearsRef } from '.'
 import { useMonthAsString } from '../hooks/useMonthAsString'
+import { useYearAsString } from '../hooks/useYearAsString'
 import { TBill } from '../types/Bill'
 
 export const deleteBill = async (bill: TBill) => {
@@ -33,6 +34,19 @@ export const deleteBill = async (bill: TBill) => {
   monthsQuerySnapshot.forEach(async (res) => {
     const docToUpdate = res.data()
     const docRef = doc(monthsRef, res.id)
+
+    await updateDoc(docRef, {
+      bills: docToUpdate.bills.filter((el: TBill) => el.id !== bill.id),
+    })
+  })
+
+  const yearToUpdate = useYearAsString(bill.paymentDate)
+  const yearsQuery = query(yearsRef, where('name', '==', yearToUpdate))
+  const yearsQuerySnapshot = await getDocs(yearsQuery)
+
+  yearsQuerySnapshot.forEach(async (res) => {
+    const docToUpdate = res.data()
+    const docRef = doc(yearsRef, res.id)
 
     await updateDoc(docRef, {
       bills: docToUpdate.bills.filter((el: TBill) => el.id !== bill.id),

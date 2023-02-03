@@ -54,7 +54,7 @@ export const CustomPopup = (props: any) => {
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Choose action</Text>
             <TouchableOpacity style={[styles.button]}>
-              <View style={{ flexBasis: '60%' }}>
+              <View style={{ flexBasis: '70%' }}>
                 <Text style={styles.textStyle}>Edit</Text>
               </View>
               <View
@@ -74,7 +74,7 @@ export const CustomPopup = (props: any) => {
               style={[styles.button]}
               onPress={createTwoButtonAlert}
             >
-              <View style={{ flexBasis: '60%' }}>
+              <View style={{ flexBasis: '70%' }}>
                 <Text style={styles.textStyle}>Delete</Text>
               </View>
               <View

@@ -7,11 +7,18 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore'
-import { billsRef, categoriesRef, monthsRef, productsRef } from './index'
+import {
+  billsRef,
+  categoriesRef,
+  monthsRef,
+  productsRef,
+  yearsRef,
+} from './index'
 import { stringToNumber } from '../methods/stringToNumber'
 import { TBill } from '../types/Bill'
 import { TCategory } from '../types/Category'
 import { useMonthAsString } from '../hooks/useMonthAsString'
+import { useYearAsString } from '../hooks/useYearAsString'
 
 export const addBill = async (bill: TBill, selectedCategory?: TCategory) => {
   const convertedProducts = bill.products.map((product) => {
@@ -44,20 +51,48 @@ export const addBill = async (bill: TBill, selectedCategory?: TCategory) => {
   })
 
   const monthToUpdate = useMonthAsString(bill.paymentDate)
+  const yearToUpdate = useYearAsString(bill.paymentDate)
 
-  const monthsQuery = query(monthsRef, where('name', '==', monthToUpdate))
-  const querySnapshot = await getDocs(monthsQuery)
+  const monthsQuery = query(
+    monthsRef,
+    where('name', '==', monthToUpdate),
+    where('years', '==', yearToUpdate)
+  )
+  const monthsQuerySnapshot = await getDocs(monthsQuery)
 
-  if (!querySnapshot.docs.length) {
+  if (!monthsQuerySnapshot.docs.length) {
     await addDoc(monthsRef, {
       name: monthToUpdate,
+      year: yearToUpdate,
       bills: [{ ...bill, id: newDocRef.id, products: convertedProducts }],
     })
   }
 
-  querySnapshot.forEach(async (res) => {
+  monthsQuerySnapshot.forEach(async (res) => {
     const docToUpdate = res.data()
     const docRef = doc(monthsRef, res.id)
+    await updateDoc(docRef, {
+      ...docToUpdate,
+      bills: [
+        ...docToUpdate.bills,
+        { ...bill, id: newDocRef.id, products: convertedProducts },
+      ],
+    })
+  })
+
+  const yearsQuery = query(yearsRef, where('name', '==', yearToUpdate))
+  const yearsQuerySnapshot = await getDocs(yearsQuery)
+
+  if (!yearsQuerySnapshot.docs.length) {
+    await addDoc(yearsRef, {
+      name: yearToUpdate,
+      bills: [{ ...bill, id: newDocRef.id, products: convertedProducts }],
+    })
+  }
+
+  yearsQuerySnapshot.forEach(async (res) => {
+    const docToUpdate = res.data()
+    const docRef = doc(yearsRef, res.id)
     await updateDoc(docRef, {
       ...docToUpdate,
       bills: [

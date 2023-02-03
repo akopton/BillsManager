@@ -83,9 +83,8 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   }, [productsList])
 
   const onDateChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate
-    setPaymentDate(currentDate)
-    setBill({ ...bill, paymentDate: currentDate.getTime() })
+    setPaymentDate(selectedDate)
+    setBill({ ...bill, paymentDate: selectedDate.getTime() })
   }
 
   const onSearch = (text: string) => {

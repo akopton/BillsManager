@@ -27,8 +27,9 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 
 export const db = getFirestore()
-export const categoriesRef = collection(db, 'categories')
 export const productsRef = collection(db, 'products')
 export const billsRef = collection(db, 'bills')
+export const categoriesRef = collection(db, 'categories')
 export const monthsRef = collection(db, 'months')
+export const yearsRef = collection(db, 'years')
 
