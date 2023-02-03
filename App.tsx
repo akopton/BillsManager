@@ -1,4 +1,4 @@
-import { NavigationContainer, Route, TabRouter } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
 import { CategoryPage } from './pages/CategoryPage'
@@ -15,7 +15,6 @@ import { HeaderDeleteBtn } from './components/HeaderDeleteBtn'
 const Stack = createNativeStackNavigator()
 
 export default function App() {
-  // APP ID bills_manager_realm-depzi
   return (
     <SafeAreaProvider>
       <NavigationContainer>

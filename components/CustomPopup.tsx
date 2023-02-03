@@ -11,7 +11,6 @@ import {
 } from 'react-native'
 import Entypo from 'react-native-vector-icons/Entypo'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import { db } from '../firebase'
 import { deleteBill } from '../firebase/deleteBill'
 import { TBill } from '../types/Bill'
 

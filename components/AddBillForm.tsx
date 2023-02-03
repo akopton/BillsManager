@@ -10,25 +10,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
 import { Picker, onOpen } from 'react-native-actions-sheet-picker'
-import {
-  addDoc,
-  doc,
-  getDocs,
-  onSnapshot,
-  query,
-  setDoc,
-  where,
-} from 'firebase/firestore'
+import { onSnapshot } from 'firebase/firestore'
 import { TCategory } from '../types/Category'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { TProduct } from '../types/Product'
 import { sumValues } from '../methods/sumValues'
 import { ProductToAdd } from './ProductToAdd'
-import { billsRef, categoriesRef, productsRef } from '../firebase/index'
+import { categoriesRef, productsRef } from '../firebase/index'
 import { useQuery } from '../hooks/useQuery'
 import { TBill } from '../types/Bill'
 import { stringToNumber } from '../methods/stringToNumber'
-import { increment, remove } from 'firebase/database'
 import { addBill } from '../firebase/addBill'
 
 const initialBill: TBill = {

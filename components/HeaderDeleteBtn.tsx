@@ -1,7 +1,5 @@
-import { Text, TouchableOpacity, Alert } from 'react-native'
+import { TouchableOpacity, Alert } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import { deleteDoc, doc } from 'firebase/firestore'
-import { db } from '../firebase'
 import { deleteBill } from '../firebase/deleteBill'
 import { TBill } from '../types/Bill'
 
