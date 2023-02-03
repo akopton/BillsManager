@@ -36,18 +36,20 @@ const initialBill: TBill = {
   category: '',
   value: 0,
   products: [],
-  date: new Date().getTime(),
+  paymentDate: new Date().getTime(),
+  addedAt: new Date().getTime(),
 }
 
 export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
-  const [searchValue, setSearchValue] = useState<string>('')
-  const [selectedCategory, setSelectedCategory] = useState<TCategory>()
   const [categories, setCategories] = useState<TCategory[]>([])
-  const [date, setDate] = useState<Date>(new Date())
+  const [selectedCategory, setSelectedCategory] = useState<TCategory>()
+  const [searchValue, setSearchValue] = useState<string>('')
   const [products, setProducts] = useState<TProduct[]>([])
   const [productsList, setProductsList] = useState<TProduct[]>([])
   const [bill, setBill] = useState<TBill>(initialBill)
   const [billName, setBillName] = useState<string>()
+  const [billSumValue, setBillSumValue] = useState<string>('0,00')
+  const [paymentDate, setPaymentDate] = useState<Date>(new Date())
   const [correct, setCorrect] = useState<boolean>(false)
 
   const handleBillName = (name: string) => {
@@ -75,15 +77,15 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
     }
   }
 
-  const billSumValue = useMemo(() => {
+  const productsSumValue = useMemo(() => {
     setBill({ ...bill, value: stringToNumber(sumValues(productsList)) })
     return sumValues(productsList)
   }, [productsList])
 
   const onDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate
-    setDate(currentDate)
-    setBill({ ...bill, date: currentDate.getTime() })
+    setPaymentDate(currentDate)
+    setBill({ ...bill, paymentDate: currentDate.getTime() })
   }
 
   const onSearch = (text: string) => {
@@ -91,13 +93,13 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
   }
 
   const handleAddBill = async () => {
-    if (!bill.products.length) {
-      alert('Musisz dodać produkty!')
+    if (bill.products?.some((el) => !el.value)) {
+      alert('Proszę podać kwoty wybranych produktów!')
       return
     }
 
-    if (bill.products.some((el) => !el.value)) {
-      alert('Proszę podać kwoty wybranych produktów!')
+    if (bill.name === '') {
+      alert('Proszę podać nazwę dla paragonu!')
       return
     }
 
@@ -106,6 +108,15 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
       navigation.goBack()
       setAddingNewBill(false)
     })
+  }
+
+  const handleBillValue = (value: string) => {
+    if (productsList.length) {
+      setBillSumValue('0,00')
+      return
+    }
+    setBillSumValue(value)
+    setBill({ ...bill, value: stringToNumber(value) })
   }
 
   useEffect(() => {
@@ -176,9 +187,19 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
           }}
         >
           <Text style={{ fontSize: 20 }}>Suma:</Text>
-          <Text style={{ fontSize: 20 }}>
-            {billSumValue.replace('.', ',')} zł
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+            <TextInput
+              keyboardType="numeric"
+              onChangeText={handleBillValue}
+              value={
+                productsList.length
+                  ? productsSumValue.replace('.', ',')
+                  : billSumValue
+              }
+              style={{ fontSize: 20 }}
+            />
+            <Text style={{ fontSize: 20 }}>zł</Text>
+          </View>
         </View>
 
         <View>
@@ -259,7 +280,7 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
         <View>
           <DateTimePicker
             testID="dateTimePicker"
-            value={date}
+            value={paymentDate}
             onChange={onDateChange}
           />
         </View>

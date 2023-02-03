@@ -43,7 +43,7 @@ export const addBill = async (bill: TBill, selectedCategory?: TCategory) => {
     ],
   })
 
-  const monthToUpdate = useMonthAsString(bill.date)
+  const monthToUpdate = useMonthAsString(bill.paymentDate)
 
   const monthsQuery = query(monthsRef, where('name', '==', monthToUpdate))
   const querySnapshot = await getDocs(monthsQuery)

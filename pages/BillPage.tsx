@@ -1,33 +1,71 @@
-import { View, Text, StyleSheet, PixelRatio } from 'react-native'
+import { useState } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  PixelRatio,
+  ActionSheetIOS,
+  Button,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StatusBarStyle,
+  Switch,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  TextInput,
+  Keyboard,
+} from 'react-native'
 
 export const BillPage = ({ route }: any) => {
-  const bill = route.params
+  const [isEnabled, setIsEnabled] = useState(false)
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
 
   return (
-    <View style={{ position: 'relative' }}>
-      {/* <Text>{bill.value.toString()}</Text> */}
-      <View style={styles.circleChart}></View>
-      <View style={styles.filler}></View>
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
+          <Text style={styles.header}>Header</Text>
+          <TextInput
+            placeholder="Username"
+            style={styles.textInput}
+          />
+          <View style={styles.btnContainer}>
+            <Button
+              title="Submit"
+              onPress={() => null}
+            />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   )
 }
 
 const styles = StyleSheet.create({
-  circleChart: {
-    height: 300,
-    width: 300,
-    borderWidth: 20,
-    borderRadius: 600,
-    position: 'absolute',
+  container: {
+    flex: 1,
   },
-  filler: {
-    position: 'absolute',
-    top: 5,
-    left: 5,
-    height: 290,
-    width: 290,
-    borderWidth: 10,
-    borderRadius: 580,
-    borderColor: 'red',
+  inner: {
+    padding: 24,
+    flex: 1,
+    justifyContent: 'space-around',
+  },
+  header: {
+    fontSize: 36,
+    marginBottom: 48,
+  },
+  textInput: {
+    height: 40,
+    borderColor: '#000000',
+    borderBottomWidth: 1,
+    marginBottom: 36,
+  },
+  btnContainer: {
+    backgroundColor: 'white',
+    marginTop: 12,
   },
 })

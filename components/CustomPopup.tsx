@@ -54,22 +54,42 @@ export const CustomPopup = (props: any) => {
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Choose action</Text>
             <TouchableOpacity style={[styles.button]}>
-              <Text style={styles.textStyle}>Edit </Text>
-              <Entypo
-                name="new-message"
-                size={20}
-              />
+              <View style={{ flexBasis: '60%' }}>
+                <Text style={styles.textStyle}>Edit</Text>
+              </View>
+              <View
+                style={{
+                  flexBasis: '30%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Entypo
+                  name="new-message"
+                  size={20}
+                />
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button]}
               onPress={createTwoButtonAlert}
             >
-              <Text style={styles.textStyle}>Delete </Text>
-              <FontAwesome5
-                name={'trash-alt'}
-                solid
-                size={20}
-              />
+              <View style={{ flexBasis: '60%' }}>
+                <Text style={styles.textStyle}>Delete</Text>
+              </View>
+              <View
+                style={{
+                  flexBasis: '30%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <FontAwesome5
+                  name={'trash-alt'}
+                  solid
+                  size={20}
+                />
+              </View>
             </TouchableOpacity>
           </View>
         </View>

@@ -23,11 +23,10 @@ export const deleteBill = async (bill: TBill) => {
 
     await updateDoc(docRef, {
       bills: docToUpdate.bills.filter((el: TBill) => el.id !== bill.id),
-      value: docToUpdate.value - bill.value,
     })
   })
 
-  const monthToUpdate = useMonthAsString(bill.date)
+  const monthToUpdate = useMonthAsString(bill.paymentDate)
   const monthsQuery = query(monthsRef, where('name', '==', monthToUpdate))
   const monthsQuerySnapshot = await getDocs(monthsQuery)
 
@@ -37,7 +36,6 @@ export const deleteBill = async (bill: TBill) => {
 
     await updateDoc(docRef, {
       bills: docToUpdate.bills.filter((el: TBill) => el.id !== bill.id),
-      value: docToUpdate.value - bill.value,
     })
   })
 
