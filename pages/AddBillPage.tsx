@@ -1,6 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { AddBillForm } from '../components/AddBillForm'
+import { addBill } from '../firebase/addBill'
+import { TBill } from '../types/Bill'
+import { TCategory } from '../types/Category'
+import { TProduct } from '../types/Product'
+const initialBill: TBill = {
+  name: '',
+  category: '',
+  value: 0,
+  products: [],
+  paymentDate: new Date().getTime(),
+  addedAt: new Date().getTime(),
+}
 
 export const AddBillPage = ({ route, navigation }: any) => {
   const [addingNewBill, setAddingNewBill] = useState<boolean>(false)

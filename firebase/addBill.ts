@@ -39,16 +39,6 @@ export const addBill = async (bill: TBill, selectedCategory?: TCategory) => {
     products: convertedProducts,
   })
 
-  if (!selectedCategory) return
-
-  await updateDoc(doc(categoriesRef, selectedCategory?.id), {
-    ...selectedCategory,
-    bills: [
-      ...selectedCategory.bills,
-      { ...bill, id: newDocRef.id, products: convertedProducts },
-    ],
-  })
-
   const monthToUpdate = useMonthAsString(bill.paymentDate)
   const yearToUpdate = useYearAsString(bill.paymentDate)
 
@@ -103,7 +93,16 @@ export const addBill = async (bill: TBill, selectedCategory?: TCategory) => {
 
   bill.products.forEach(async (product) => {
     await updateDoc(doc(productsRef, product.id), {
-      category: selectedCategory.name,
+      category: selectedCategory?.name,
     })
+  })
+
+  if (!selectedCategory) return
+  await updateDoc(doc(categoriesRef, selectedCategory?.id), {
+    ...selectedCategory,
+    bills: [
+      ...selectedCategory.bills,
+      { ...bill, id: newDocRef.id, products: convertedProducts },
+    ],
   })
 }

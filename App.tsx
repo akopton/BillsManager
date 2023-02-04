@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import React from 'react'
+import React, { useState } from 'react'
 import { CategoryPage } from './pages/CategoryPage'
 import { HomeScreen } from './pages/HomeScreen'
 import { MonthPage } from './pages/MonthPage'
@@ -8,10 +8,12 @@ import { handleFirstCapitalLetter } from './methods/handleFirstCapitalLetter'
 import { AddBillPage } from './pages/AddBillPage'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { LoginPage } from './pages/LoginPage'
-import { HeaderAddBillBtn } from './components/HeaderAddBillBtn'
+import { HeaderNewBillBtn } from './components/HeaderNewBillBtn'
 import { LogoutBtn } from './components/LogoutBtn'
 import { BillPage } from './pages/BillPage'
 import { HeaderDeleteBtn } from './components/HeaderDeleteBtn'
+import { HeaderAddBillBtn } from './components/HeaderAddBillBtn'
+import { TBill } from './types/Bill'
 const Stack = createNativeStackNavigator()
 
 export default function App() {
@@ -36,31 +38,17 @@ export default function App() {
               return {
                 title: 'Home',
                 headerLeft: () => <LogoutBtn navigation={navigation} />,
-                headerRight: () => <HeaderAddBillBtn navigation={navigation} />,
+                headerRight: () => <HeaderNewBillBtn navigation={navigation} />,
               }
-            }}
-          />
-          <Stack.Screen
-            name="MonthPage"
-            component={MonthPage}
-            options={({ route, navigation }: any) => {
-              const { props } = route.params
-              return { title: handleFirstCapitalLetter(props.name) }
-            }}
-          />
-          <Stack.Screen
-            name="CategoryPage"
-            component={CategoryPage}
-            options={({ route, navigation }: any) => {
-              const { props } = route.params
-              return { title: handleFirstCapitalLetter(props.name) }
             }}
           />
           <Stack.Screen
             name="AddBillPage"
             component={AddBillPage}
             options={({ route, navigation }: any) => {
-              return { title: 'Dodaj nowy rachunek' }
+              return {
+                title: 'Dodaj nowy rachunek',
+              }
             }}
           />
           <Stack.Screen

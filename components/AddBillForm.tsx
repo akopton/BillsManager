@@ -21,6 +21,7 @@ import { useQuery } from '../hooks/useQuery'
 import { TBill } from '../types/Bill'
 import { stringToNumber } from '../methods/stringToNumber'
 import { addBill } from '../firebase/addBill'
+import { HeaderAddBillBtn } from './HeaderAddBillBtn'
 
 const initialBill: TBill = {
   name: '',
@@ -31,13 +32,13 @@ const initialBill: TBill = {
   addedAt: new Date().getTime(),
 }
 
-export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
-  const [categories, setCategories] = useState<TCategory[]>([])
+export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
+  const [bill, setBill] = useState<TBill>(initialBill)
   const [selectedCategory, setSelectedCategory] = useState<TCategory>()
+  const [categories, setCategories] = useState<TCategory[]>([])
   const [searchValue, setSearchValue] = useState<string>('')
   const [products, setProducts] = useState<TProduct[]>([])
   const [productsList, setProductsList] = useState<TProduct[]>([])
-  const [bill, setBill] = useState<TBill>(initialBill)
   const [billName, setBillName] = useState<string>()
   const [billSumValue, setBillSumValue] = useState<string>('0,00')
   const [paymentDate, setPaymentDate] = useState<Date>(new Date())
@@ -82,24 +83,6 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
     setSearchValue(text)
   }
 
-  const handleAddBill = async () => {
-    if (bill.products?.some((el) => !el.value)) {
-      alert('Proszę podać kwoty wybranych produktów!')
-      return
-    }
-
-    if (bill.name === '') {
-      alert('Proszę podać nazwę dla paragonu!')
-      return
-    }
-
-    setAddingNewBill(true)
-    await addBill(bill, selectedCategory).then(() => {
-      navigation.goBack()
-      setAddingNewBill(false)
-    })
-  }
-
   const handleBillValue = (value: string) => {
     if (productsList.length) {
       setBillSumValue('0,00')
@@ -123,6 +106,19 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
       unsubscribe()
     }
   }, [])
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderAddBillBtn
+          bill={bill}
+          selectedCategory={selectedCategory}
+          setAddingNewBill={setAddingNewBill}
+          navigation={navigation}
+        />
+      ),
+    })
+  }, [bill])
 
   useEffect(() => {
     const unsubscribe = onSnapshot(productsRef, (snapshot) => {
@@ -274,13 +270,6 @@ export const AddBillForm = ({ setAddingNewBill, navigation }: any) => {
             onChange={onDateChange}
           />
         </View>
-      </View>
-      <View
-        style={[styles.dropdown, { borderColor: correct ? 'green' : '#aaa' }]}
-      >
-        <TouchableOpacity onPress={handleAddBill}>
-          <Text style={styles.btnText}>Dodaj paragon</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )

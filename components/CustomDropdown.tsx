@@ -15,8 +15,11 @@ export const CustomDropdown = (props: any) => {
       </TouchableOpacity>
       {isOpened && (
         <View style={styles.dropdownList}>
-          {props.data.map((el: any) => (
-            <DropdownItem {...el} />
+          {props.data.map((el: any, index: number) => (
+            <DropdownItem
+              {...el}
+              key={index}
+            />
           ))}
         </View>
       )}
