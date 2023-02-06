@@ -8,5 +8,5 @@ export type TBill = {
   products: TProduct[]
   paymentDate: number
   addedAt: number
-  //TODO: isPaid: boolean
+  isPaid: boolean
 }

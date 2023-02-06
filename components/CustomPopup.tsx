@@ -41,6 +41,11 @@ export const CustomPopup = (props: any) => {
     props.setPopup({ show: false, content: {} })
   }
 
+  const handleNavigate = () => {
+    props.navigation.navigate('EditBillPage', props.content)
+    setTimeout(() => hideModal(), 10)
+  }
+
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -52,7 +57,10 @@ export const CustomPopup = (props: any) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Choose action</Text>
-            <TouchableOpacity style={[styles.button]}>
+            <TouchableOpacity
+              style={[styles.button]}
+              onPress={handleNavigate}
+            >
               <View style={{ flexBasis: '70%' }}>
                 <Text style={styles.textStyle}>Edit</Text>
               </View>

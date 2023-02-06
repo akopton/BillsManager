@@ -14,6 +14,7 @@ import { BillPage } from './pages/BillPage'
 import { HeaderDeleteBtn } from './components/HeaderDeleteBtn'
 import { HeaderAddBillBtn } from './components/HeaderAddBillBtn'
 import { TBill } from './types/Bill'
+import { EditBillPage } from './pages/EditBillPage'
 const Stack = createNativeStackNavigator()
 
 export default function App() {
@@ -54,6 +55,22 @@ export default function App() {
           <Stack.Screen
             name="BillPage"
             component={BillPage}
+            options={({ route, navigation }: any) => {
+              const bill = route.params
+              return {
+                title: handleFirstCapitalLetter(bill.name),
+                headerRight: () => (
+                  <HeaderDeleteBtn
+                    {...bill}
+                    navigation={navigation}
+                  />
+                ),
+              }
+            }}
+          />
+          <Stack.Screen
+            name="EditBillPage"
+            component={EditBillPage}
             options={({ route, navigation }: any) => {
               const bill = route.params
               return {

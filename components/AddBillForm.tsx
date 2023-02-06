@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Switch,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { globalStyles } from '../styles/global'
@@ -22,30 +23,25 @@ import { TBill } from '../types/Bill'
 import { stringToNumber } from '../methods/stringToNumber'
 import { addBill } from '../firebase/addBill'
 import { HeaderAddBillBtn } from './HeaderAddBillBtn'
+import { numberToString } from '../methods/numberToString'
 
-const initialBill: TBill = {
-  name: '',
-  category: '',
-  value: 0,
-  products: [],
-  paymentDate: new Date().getTime(),
-  addedAt: new Date().getTime(),
-}
-
-export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
-  const [bill, setBill] = useState<TBill>(initialBill)
-  const [selectedCategory, setSelectedCategory] = useState<TCategory>()
+export const AddBillForm = ({
+  navigation,
+  setAddingNewBill,
+  initialBill,
+}: any) => {
   const [categories, setCategories] = useState<TCategory[]>([])
-  const [searchValue, setSearchValue] = useState<string>('')
   const [products, setProducts] = useState<TProduct[]>([])
-  const [productsList, setProductsList] = useState<TProduct[]>([])
-  const [billName, setBillName] = useState<string>()
-  const [billSumValue, setBillSumValue] = useState<string>('0,00')
+  const [searchValue, setSearchValue] = useState<string>('')
+
+  const [bill, setBill] = useState<TBill>(initialBill)
+  const [billSumValue, setBillSumValue] = useState<string>(
+    initialBill.value > 0 ? numberToString(initialBill.value) : '0,00'
+  )
+  const [selectedCategory, setSelectedCategory] = useState<TCategory>()
   const [paymentDate, setPaymentDate] = useState<Date>(new Date())
-  const [correct, setCorrect] = useState<boolean>(false)
 
   const handleBillName = (name: string) => {
-    setBillName(name)
     setBill({ ...bill, name: name })
   }
 
@@ -55,24 +51,22 @@ export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
   }
 
   const handleSelectedProduct = (product: TProduct) => {
-    const newProductsList = [...productsList, product]
-    setProductsList(newProductsList)
+    const newProductsList = [...bill.products, product]
     setBill({ ...bill, products: newProductsList })
 
-    if (productsList.some((el) => el.name === product.name)) {
-      const newProductsList = productsList.filter(
+    if (bill.products.some((el) => el.name === product.name)) {
+      const newProductsList = bill.products.filter(
         (el) => el.name !== product.name
       )
-      setProductsList(newProductsList)
       setBill({ ...bill, products: newProductsList })
       return
     }
   }
 
   const productsSumValue = useMemo(() => {
-    setBill({ ...bill, value: stringToNumber(sumValues(productsList)) })
-    return sumValues(productsList)
-  }, [productsList])
+    setBill({ ...bill, value: stringToNumber(sumValues(bill.products)) })
+    return sumValues(bill.products)
+  }, [bill.products])
 
   const onDateChange = (event: any, selectedDate: any) => {
     setPaymentDate(selectedDate)
@@ -84,12 +78,16 @@ export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
   }
 
   const handleBillValue = (value: string) => {
-    if (productsList.length) {
+    if (bill.products.length) {
       setBillSumValue('0,00')
       return
     }
     setBillSumValue(value)
     setBill({ ...bill, value: stringToNumber(value) })
+  }
+
+  const handleSwitch = () => {
+    setBill({ ...bill, isPaid: !bill.isPaid })
   }
 
   useEffect(() => {
@@ -132,25 +130,19 @@ export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
         })
       })
       setProducts(newProducts)
-      const [result] = productsList.filter(
+      const [result] = bill.products.filter(
         (el: TProduct) => !newProducts.includes(el)
       )
-      const newProductsList = productsList.filter(
+      const newProductsList = bill.products.filter(
         (product: TProduct) => product !== result
       )
-      setProductsList(newProductsList)
+      setBill({ ...bill, products: newProductsList })
     })
 
     return () => {
       unsubscribe()
     }
   }, [])
-
-  useEffect(() => {
-    if (bill.name && bill.category && bill.products.length) {
-      setCorrect(true)
-    }
-  }, [bill])
 
   return (
     <SafeAreaView style={[globalStyles.page, { paddingTop: -20 }]}>
@@ -159,7 +151,7 @@ export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
           <TextInput
             style={[styles.dropdown, styles.btnText, { marginTop: 0 }]}
             placeholder="nazwa"
-            value={billName}
+            value={bill.name}
             onChangeText={handleBillName}
           />
         </View>
@@ -178,7 +170,7 @@ export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
               keyboardType="numeric"
               onChangeText={handleBillValue}
               value={
-                productsList.length
+                bill.products.length
                   ? productsSumValue.replace('.', ',')
                   : billSumValue
               }
@@ -248,20 +240,29 @@ export const AddBillForm = ({ navigation, setAddingNewBill }: any) => {
         </View>
       </View>
       <ScrollView style={styles.productsList}>
-        {productsList.map((product: TProduct, index: number) => (
+        {bill.products.map((product: TProduct, index: number) => (
           <ProductToAdd
             product={product}
             key={index}
-            productsList={productsList}
-            setProductsList={setProductsList}
+            // productsList={bill.products}
+            // setProductsList={setProductsList}
             bill={bill}
             setBill={setBill}
           />
         ))}
       </ScrollView>
+      <View style={styles.paymentSwitch}>
+        <Text style={styles.label}>
+          {bill.isPaid ? 'Zapłacony' : 'Do zapłaty'}
+        </Text>
+        <Switch
+          value={bill.isPaid}
+          onValueChange={handleSwitch}
+        />
+      </View>
       <View style={styles.datePicker}>
         <View>
-          <Text style={styles.datePickerLabel}>Data paragonu: </Text>
+          <Text style={styles.label}>Data paragonu: </Text>
         </View>
         <View>
           <DateTimePicker
@@ -294,16 +295,21 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#000000',
   },
-  datePickerLabel: {
+  label: {
     fontSize: 18,
   },
   datePicker: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 10,
   },
   productsList: {
     marginTop: 20,
+  },
+  paymentSwitch: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 })

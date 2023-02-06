@@ -1,8 +1,9 @@
 import { Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { useDate } from '../hooks/useDate'
 import { numberToString } from '../methods/numberToString'
 
 export const Bill = (props: any) => {
-  //TODO press bill to show its content, longpress bill to show modal with additional actions
+  const dateToShow = useDate(props.bill.paymentDate)
 
   return (
     <TouchableOpacity
@@ -13,6 +14,7 @@ export const Bill = (props: any) => {
       onLongPress={() => props.setPopup({ show: true, content: props.bill })}
     >
       <Text>{props.bill.name}</Text>
+      <Text>{dateToShow}</Text>
       <Text>{numberToString(props.bill.value)} zł</Text>
     </TouchableOpacity>
   )
@@ -24,7 +26,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     borderWidth: 2,
     borderColor: '#aaa',
     borderRadius: 10,

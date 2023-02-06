@@ -12,8 +12,8 @@ const initialBill: TBill = {
   products: [],
   paymentDate: new Date().getTime(),
   addedAt: new Date().getTime(),
+  isPaid: true,
 }
-
 export const AddBillPage = ({ route, navigation }: any) => {
   const [addingNewBill, setAddingNewBill] = useState<boolean>(false)
 
@@ -34,6 +34,7 @@ export const AddBillPage = ({ route, navigation }: any) => {
         <AddBillForm
           setAddingNewBill={setAddingNewBill}
           navigation={navigation}
+          initialBill={initialBill}
         />
       )}
     </View>

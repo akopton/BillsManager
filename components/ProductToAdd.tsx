@@ -5,20 +5,20 @@ import { TProduct } from '../types/Product'
 
 export const ProductToAdd = ({
   product,
-  productsList,
-  setProductsList,
+  // productsList,
+  // setProductsList,
   bill,
   setBill,
 }: {
   product: TProduct
-  productsList: any[]
-  setProductsList: any
+  // productsList: any[]
+  // setProductsList: any
   bill: TBill
   setBill: any
 }) => {
   const [showFullName, setShowFullName] = useState<boolean>(false)
   const handleProductCount = (count: string) => {
-    const updatedProducts = productsList.map((el) => {
+    const updatedProducts = bill.products.map((el) => {
       if (product.name === el.name) {
         return {
           ...el,
@@ -26,7 +26,7 @@ export const ProductToAdd = ({
         }
       } else return el
     })
-    setProductsList(updatedProducts)
+    // setProductsList(updatedProducts)
     setBill({
       ...bill,
       products: updatedProducts,
@@ -34,12 +34,12 @@ export const ProductToAdd = ({
   }
 
   const handleProductValue = (value: string) => {
-    const updatedProducts = productsList.map((el) => {
+    const updatedProducts = bill.products.map((el) => {
       if (product.name === el.name) {
         return { ...product, value: value }
       } else return el
     })
-    setProductsList(updatedProducts)
+    // setProductsList(updatedProducts)
     setBill({
       ...bill,
       products: updatedProducts,

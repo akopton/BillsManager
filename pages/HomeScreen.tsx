@@ -5,6 +5,8 @@ import { onSnapshot } from 'firebase/firestore'
 import { TBill } from '../types/Bill'
 import { TYear } from '../types/Year'
 import { CustomDropdown } from '../components/CustomDropdown'
+import { Bill } from '../components/Bill'
+import { CustomPopup } from '../components/CustomPopup'
 
 // wyświetla wszystkie miesiące z danego roku
 
@@ -14,10 +16,10 @@ export const HomeScreen = ({ route, navigation }: any) => {
   const [billsList, setBillsList] = useState<TBill[]>([])
   // const [categories, setCategories] = useState<TCategory[]>([])
   // const [filterValue, setFilterValue] = useState<string>()
-  // const [popup, setPopup] = useState<{ show: boolean; content: unknown }>({
-  //   show: false,
-  //   content: {},
-  // })
+  const [popup, setPopup] = useState<{ show: boolean; content: unknown }>({
+    show: false,
+    content: {},
+  })
 
   useEffect(() => {
     setLoadingBills(true)
@@ -80,11 +82,19 @@ export const HomeScreen = ({ route, navigation }: any) => {
   return (
     <View>
       <View style={styles.billsToPay}>
-        {billsList.map((bill: TBill, id: number) => (
-          <View key={id}>
-            <Text>{bill.name}</Text>
-          </View>
-        ))}
+        <Text style={{ textAlign: 'center', marginBottom: 10 }}>
+          Najbliższe do zapłaty
+        </Text>
+        {billsList
+          .filter((bill: TBill) => !bill.isPaid)
+          .map((bill: TBill, id: number) => (
+            <Bill
+              key={id}
+              bill={bill}
+              setPopup={setPopup}
+              navigation={navigation}
+            />
+          ))}
       </View>
       <View style={styles.yearsList}>
         <View>
@@ -110,12 +120,23 @@ export const HomeScreen = ({ route, navigation }: any) => {
           })}
         </View>
       </View>
+      {popup.show && (
+        <CustomPopup
+          popup={popup}
+          setPopup={setPopup}
+          content={popup.content}
+          navigation={navigation}
+        />
+      )}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  billsToPay: {},
+  billsToPay: {
+    marginTop: 10,
+    paddingHorizontal: 50,
+  },
   yearsList: {},
 })
 
